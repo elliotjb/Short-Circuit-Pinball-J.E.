@@ -30,7 +30,9 @@ bool ModulePhysics::Start()
 	LOG("Creating Physics 2D environment");
 	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
 	world->SetContactListener(this);
-
+	
+	b2BodyDef bd;
+	ground = world->CreateBody(&bd);
 	
 	return true;
 }
@@ -176,11 +178,21 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float 
 
 void ModulePhysics::CreateRevolutionJoint()
 {
-	b2Vec2 anchor(300.0f, 400.0f);
+	/*b2Vec2 anchor(300.0f, 400.0f);
 	App->player->lever.pivot = App->physics->CreateCircle(anchor.x, anchor.y, 20, false);
 	App->player->lever.box = App->physics->CreateRectangle(anchor.x, anchor.y, 50, 20);
 	App->player->lever.rev_joint.Initialize(App->player->lever.pivot->body, App->player->lever.box->body, anchor);
 	b2RevoluteJoint* revolute_joint = (b2RevoluteJoint*)world->CreateJoint(&App->player->lever.rev_joint);
+	
+	App->player->lever.rev_joint.bodyA = App->player->lever.pivot->body;
+	App->player->lever.rev_joint.bodyB = App->player->lever.box->body;
+
+	App->player->lever.rev_joint.collideConnected = false;
+	
+	App->player->lever.rev_joint.localAnchorA.SetZero();
+	App->player->lever.rev_joint.localAnchorB.SetZero();*/
+
+
 
 }
 
@@ -262,9 +274,42 @@ update_status ModulePhysics::PostUpdate()
 				}
 				break;
 			}
-			
-		}
+			b2Vec2 point(PIXEL_TO_METERS(App->input->GetMouseX()), PIXEL_TO_METERS(App->input->GetMouseY()));
 
+			// TODO 1: If mouse button 1 is pressed ...
+			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+			{
+				// test if the current body contains mouse position
+				bool hit;
+				b2Transform transform = b->GetTransform();
+				b2Shape* shape = f->GetShape();
+				hit = shape->TestPoint(transform, point);
+
+
+				if (hit == true)
+				{
+					b2MouseJointDef def;
+					def.bodyA = ground;
+					def.bodyB = b;
+					def.target = point;
+					def.dampingRatio = 0.5f;
+					def.frequencyHz = 2.0f;
+					def.maxForce = 100.0f * b->GetMass();
+					mouse_joint = (b2MouseJoint*)world->CreateJoint(&def);
+				}
+			}
+
+			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT  && mouse_joint)
+			{
+				mouse_joint->SetTarget(point);
+				App->renderer->DrawLine(METERS_TO_PIXELS(point.x), METERS_TO_PIXELS(point.y), METERS_TO_PIXELS(mouse_joint->GetAnchorB().x), METERS_TO_PIXELS(mouse_joint->GetAnchorB().y), 255, 255, 255);
+			}
+			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP  && mouse_joint)
+			{
+				world->DestroyJoint(mouse_joint);
+				mouse_joint = nullptr;
+			}
+		}
 	}
 
 	return UPDATE_CONTINUE;

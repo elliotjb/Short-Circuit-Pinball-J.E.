@@ -8,11 +8,14 @@ class revolute_joint
 {
 public:
 	b2MouseJoint* mouse_joint;
-	b2RevoluteJointDef rev_joint;
 	b2Vec2 mouse_vec;
+
+	b2RevoluteJointDef rev_joint;
+
+
+	
 	PhysBody* pivot;
 	PhysBody* box;
-	//revolute_joint();
 };
 
 class ModulePlayer : public Module
