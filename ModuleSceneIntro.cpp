@@ -496,6 +496,5 @@ bool ModuleSceneIntro::CreateMap()
 	ricks.add(App->physics->CreateChain(0, 0, Part_center_Left_Withrest, 18, 1, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_center_Right_Withrest, 20, 1, false));
 
-
 	return true;
 }

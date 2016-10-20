@@ -84,10 +84,13 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, bool is_dyn )
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height)
+PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, bool is_dyn)
 {
 	b2BodyDef body;
-	body.type = b2_dynamicBody;
+	if (is_dyn)
+		body.type = b2_dynamicBody;
+	else
+		body.type = b2_staticBody;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = world->CreateBody(&body);
@@ -178,20 +181,16 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float 
 
 void ModulePhysics::CreateRevolutionJoint()
 {
-	/*b2Vec2 anchor(300.0f, 400.0f);
-	App->player->lever.pivot = App->physics->CreateCircle(anchor.x, anchor.y, 20, false);
-	App->player->lever.box = App->physics->CreateRectangle(anchor.x, anchor.y, 50, 20);
-	App->player->lever.rev_joint.Initialize(App->player->lever.pivot->body, App->player->lever.box->body, anchor);
-	b2RevoluteJoint* revolute_joint = (b2RevoluteJoint*)world->CreateJoint(&App->player->lever.rev_joint);
-	
-	App->player->lever.rev_joint.bodyA = App->player->lever.pivot->body;
-	App->player->lever.rev_joint.bodyB = App->player->lever.box->body;
+	PhysBody* pivot = CreateCircle(210, 580, 10, false);
+	PhysBody* lever = CreateRectangle(210, 580, 80, 10, true);
 
-	App->player->lever.rev_joint.collideConnected = false;
-	
-	App->player->lever.rev_joint.localAnchorA.SetZero();
-	App->player->lever.rev_joint.localAnchorB.SetZero();*/
-
+	b2RevoluteJointDef revoluteJointDef;
+	revoluteJointDef.bodyA = lever->body;
+	revoluteJointDef.bodyB = pivot->body;
+	revoluteJointDef.collideConnected = false;
+	revoluteJointDef.localAnchorA.Set(-1, 0);//the top right corner of the box
+	revoluteJointDef.localAnchorB.Set(0, 0);//center of the circle
+	b2RevoluteJoint* rev_joint = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef);
 
 
 }
