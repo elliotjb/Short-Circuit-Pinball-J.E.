@@ -52,7 +52,7 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update()
 {
-	if(App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		pivot_force_Right->body->ApplyForceToCenter(b2Vec2(0.0f, -200.0f), true);
 	}
@@ -61,7 +61,7 @@ update_status ModulePlayer::Update()
 		pivot_force_Right->body->ApplyForceToCenter(b2Vec2(0.0f, 100.0f), true);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
 		pivot_force_left->body->ApplyForceToCenter(b2Vec2(0.0f, -200.0f), true);
 	}
