@@ -2,6 +2,11 @@
 #include "Application.h"
 #include "ModulePlayer.h"
 #include "ModulePhysics.h"
+#include "ModuleInput.h"
+#include "ModuleRender.h"
+#include "ModuleSceneIntro.h"
+#include "p2Point.h"
+#include "math.h"
 
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -33,6 +38,7 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update()
 {
+
 	return UPDATE_CONTINUE;
 }
 

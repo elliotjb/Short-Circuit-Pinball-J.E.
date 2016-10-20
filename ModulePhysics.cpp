@@ -129,15 +129,15 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, int restituation, bool typeBody)
+PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float res, bool typeBody)
 {
 	b2BodyDef body;
-	if (typeBody == true)
-	{
+	if (typeBody)
 		body.type = b2_dynamicBody;
-	}
 	else
 		body.type = b2_staticBody;
+
+
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = world->CreateBody(&body);
@@ -154,7 +154,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, int re
 	shape.CreateLoop(p, size / 2);
 
 	b2FixtureDef fixture;
-	fixture.restitution = restituation;
+	fixture.restitution = res;
 	fixture.shape = &shape;
 
 	b->CreateFixture(&fixture);
@@ -251,17 +251,6 @@ update_status ModulePhysics::PostUpdate()
 		}
 
 	}
-
-	// If a body was selected we will attach a mouse joint to it
-	// so we can pull it around
-	// TODO 2: If a body was selected, create a mouse joint
-	// using mouse_joint class property
-
-
-	// TODO 3: If the player keeps pressing the mouse button, update
-	// target position and draw a red line between both anchor points
-
-	// TODO 4: If the player releases the mouse button, destroy the joint
 
 	return UPDATE_CONTINUE;
 }

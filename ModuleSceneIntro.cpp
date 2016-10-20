@@ -481,13 +481,11 @@ bool ModuleSceneIntro::CreateMap()
 
 	ricks.add(App->physics->CreateChain(0, 0, rick_head, 94, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 40, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 22, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 24, 0, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 22, 0.5f, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 24, 0.5f, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 56, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Center_1, 84, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Center_2, 22, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Down_Left, 14, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Right_Left, 12, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Left, 20, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Right, 20, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Boton_Left, 30, 2, false));
