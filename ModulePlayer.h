@@ -4,19 +4,7 @@
 #include "p2Point.h"
 #include "Box2D/Box2D/Box2D.h"
 
-class revolute_joint
-{
-public:
-	b2MouseJoint* mouse_joint;
-	b2Vec2 mouse_vec;
 
-	b2RevoluteJointDef rev_joint;
-
-
-	
-	PhysBody* pivot;
-	PhysBody* box;
-};
 
 class ModulePlayer : public Module
 {
@@ -29,5 +17,14 @@ public:
 	bool CleanUp();
 
 public:
-	revolute_joint lever;
+
+	//Lever Left
+	PhysBody* pivot_left;
+	PhysBody* lever_left;
+	PhysBody* pivot_force_left;
+	//lever Right
+	PhysBody* pivot_Right;
+	PhysBody* lever_Right;
+	PhysBody* pivot_force_Right;
+
 };
