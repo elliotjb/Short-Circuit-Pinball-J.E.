@@ -20,10 +20,7 @@ ModulePlayer::~ModulePlayer()
 bool ModulePlayer::Start()
 {
 	LOG("Loading player");
-
-	//lever.pivot = App->physics->CreateCircle(300, 300, 5);
-	//lever.box = App->physics->CreateRectangle(300, 300, 10, 5);
-
+	App->physics->CreateRevolutionJoint();
 	return true;
 }
 

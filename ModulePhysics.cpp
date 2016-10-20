@@ -3,6 +3,7 @@
 #include "ModuleInput.h"
 #include "ModuleRender.h"
 #include "ModulePhysics.h"
+#include "ModulePlayer.h"
 #include "p2Point.h"
 #include "math.h"
 
@@ -53,10 +54,14 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, bool is_dyn )
 {
 	b2BodyDef body;
-	body.type = b2_dynamicBody;
+	if (is_dyn)
+		body.type = b2_dynamicBody;
+	else
+		body.type = b2_staticBody;
+
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = world->CreateBody(&body);
@@ -167,6 +172,16 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float 
 	pbody->width = pbody->height = 0;
 
 	return pbody;
+}
+
+void ModulePhysics::CreateRevolutionJoint()
+{
+	b2Vec2 anchor(300.0f, 400.0f);
+	App->player->lever.pivot = App->physics->CreateCircle(anchor.x, anchor.y, 20, false);
+	App->player->lever.box = App->physics->CreateRectangle(anchor.x, anchor.y, 50, 20);
+	App->player->lever.rev_joint.Initialize(App->player->lever.pivot->body, App->player->lever.box->body, anchor);
+	b2RevoluteJoint* revolute_joint = (b2RevoluteJoint*)world->CreateJoint(&App->player->lever.rev_joint);
+
 }
 
 // 
