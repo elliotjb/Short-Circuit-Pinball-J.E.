@@ -241,47 +241,7 @@ update_status ModulePhysics::PostUpdate()
 				}
 				break;
 			}
-			b2Vec2 mous;
-			mous.x = PIXEL_TO_METERS(App->input->GetMouseX());
-			mous.y = PIXEL_TO_METERS(App->input->GetMouseY());
-			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
-			{
-
-
-				if (f->GetShape()->TestPoint(b->GetTransform(), mous) == true)
-				{
-					temp = f;
-				}
-
-				if (temp != NULL)
-				{
-					if (temp->GetShape()->TestPoint(b->GetTransform(), mous) == true)
-					{
-						b2MouseJointDef def;
-						def.bodyA = ground;
-						def.bodyB = b;
-						def.target = mous;
-						def.dampingRatio = 0.5f;
-						def.frequencyHz = 2.0f;
-						def.maxForce = 100.0f * b->GetMass();
-						mouse_joint = (b2MouseJoint*)world->CreateJoint(&def);
-					}
-				}
-
-			}
-			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP)
-			{
-				/*world->DestroyJoint(mouse_joint);
-				mouse_joint = NULL;*/
-			}
-
-			// TODO 1: If mouse button 1 is pressed ...
-			// App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN
-			// test if the current body contains mouse position
-			if (temp != NULL)
-			{
-				mouse_joint->SetTarget(mous);
-			}
+			
 		}
 
 	}

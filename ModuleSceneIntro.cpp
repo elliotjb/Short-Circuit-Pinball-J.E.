@@ -47,12 +47,6 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-	{
-		/*ray_on = !ray_on;
-		ray.x = App->input->GetMouseX();
-		ray.y = App->input->GetMouseY();*/
-	}
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
@@ -60,16 +54,16 @@ update_status ModuleSceneIntro::Update()
 		circles.getLast()->data->listener = this;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+	/*if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
 	{
 		boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
-	}
+	}*/
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
 		if (circles.getFirst() != NULL)
 		{
-			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -220.0f), true);
+			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
 		}
 
 	}
@@ -272,22 +266,22 @@ bool ModuleSceneIntro::CreateMap()
 
 	int PartUp_Left[56] = {
 		228, 125,
-		236, 69,
-		209, 68,
+		235, 75,
+		210, 74,
 		206, 133,
 		200, 136,
 		196, 145,
 		190, 145,
 		189, 139,
+		198, 93,
 		202, 77,
-		206, 65,
-		214, 55,
-		227, 46,
-		242, 42,
-		258, 40,
-		278, 40,
-		287, 40,
-		287, 46,
+		205, 67,
+		212, 59,
+		226, 51,
+		242, 46,
+		256, 44,
+		275, 43,
+		287, 43,
 		287, 57,
 		284, 60,
 		256, 67,
