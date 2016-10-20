@@ -1,10 +1,11 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
+#include "p2List.h"
 #include "p2Point.h"
 #include "Box2D/Box2D/Box2D.h"
 
-
+struct SDL_Texture;
 
 class ModulePlayer : public Module
 {
@@ -22,9 +23,15 @@ public:
 	PhysBody* pivot_left;
 	PhysBody* lever_left;
 	PhysBody* pivot_force_left;
+	
 	//lever Right
 	PhysBody* pivot_Right;
 	PhysBody* lever_Right;
 	PhysBody* pivot_force_Right;
+
+	SDL_Texture* lever_left_Tex;
+	SDL_Texture* lever_right_Tex;
+
+
 
 };

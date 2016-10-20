@@ -186,15 +186,19 @@ void ModulePhysics::CreateRevolutionJoint()
 	revoluteJointDef_left.bodyA = App->player->lever_left->body;
 	revoluteJointDef_left.bodyB = App->player->pivot_left->body;
 	revoluteJointDef_left.collideConnected = false;
-	revoluteJointDef_left.localAnchorA.Set(-1, 0);//the top right corner of the box
+	revoluteJointDef_left.localAnchorA.Set(-0.6, 0);//the top right corner of the box
 	revoluteJointDef_left.localAnchorB.Set(0, 0);//center of the circle
+	revoluteJointDef_left.referenceAngle = 0;
+	revoluteJointDef_left.enableLimit = true;
+	revoluteJointDef_left.lowerAngle = -18 * DEGTORAD;
+	revoluteJointDef_left.upperAngle = 25 * DEGTORAD;
 	b2RevoluteJoint* rev_joint_left = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_left);
 
 	b2RevoluteJointDef revoluteJointDef_force_left;
 	revoluteJointDef_force_left.bodyA = App->player->lever_left->body;
 	revoluteJointDef_force_left.bodyB = App->player->pivot_force_left->body;
 	revoluteJointDef_force_left.collideConnected = false;
-	revoluteJointDef_force_left.localAnchorA.Set(0, 0);//the top right corner of the box
+	revoluteJointDef_force_left.localAnchorA.Set(0.7, 0);//the top right corner of the box
 	revoluteJointDef_force_left.localAnchorB.Set(0, 0);//center of the circle
 	b2RevoluteJoint* rev_joint_force_left = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_force_left);
 
@@ -202,18 +206,20 @@ void ModulePhysics::CreateRevolutionJoint()
 	revoluteJointDef_right.bodyA = App->player->lever_Right->body;
 	revoluteJointDef_right.bodyB = App->player->pivot_Right->body;
 	revoluteJointDef_right.collideConnected = false;
-	revoluteJointDef_right.localAnchorA.Set(1, 0);//the top right corner of the box
+	revoluteJointDef_right.localAnchorA.Set(0.6, 0);//the top right corner of the box
 	revoluteJointDef_right.localAnchorB.Set(0, 0);//center of the circle
+	revoluteJointDef_right.enableLimit = true;
+	revoluteJointDef_right.lowerAngle = -25 * DEGTORAD;
+	revoluteJointDef_right.upperAngle = 18 * DEGTORAD;
 	b2RevoluteJoint* rev_joint_right = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_right);
 
 	b2RevoluteJointDef revoluteJointDef_force_right;
 	revoluteJointDef_force_right.bodyA = App->player->lever_Right->body;
 	revoluteJointDef_force_right.bodyB = App->player->pivot_force_Right->body;
 	revoluteJointDef_force_right.collideConnected = false;
-	revoluteJointDef_force_right.localAnchorA.Set(0, 0);//the top right corner of the box
+	revoluteJointDef_force_right.localAnchorA.Set(-0.7, 0);//the top right corner of the box
 	revoluteJointDef_force_right.localAnchorB.Set(0, 0);//center of the circle
 	b2RevoluteJoint* rev_joint_force_right = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_force_right);
-
 }
 
 // 
