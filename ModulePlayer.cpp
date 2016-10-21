@@ -22,18 +22,9 @@ ModulePlayer::~ModulePlayer()
 bool ModulePlayer::Start()
 {
 	LOG("Loading player");
-
+	CreateLevers();
 	lever_left_Tex = App->textures->Load("pinball/LeftLever.png");
-
-	pivot_left = App->physics->CreateCircle(205, 586, 10, false);
-	lever_left = App->physics->CreateRectangle(210, 586, 70, 10, true);
-	pivot_force_left = App->physics->CreateCircle(280, 586, 5, true);
-
 	lever_right_Tex = App->textures->Load("pinball/RightLever.png");
-
-	pivot_Right = App->physics->CreateCircle(410, 586, 10, false);
-	lever_Right = App->physics->CreateRectangle(410, 586, 70, 10, true);
-	pivot_force_Right = App->physics->CreateCircle(340, 586, 5, true);
 
 	App->physics->CreateRevolutionJoint();
 
@@ -48,6 +39,8 @@ bool ModulePlayer::CleanUp()
 
 	return true;
 }
+
+
 
 // Update: draw background
 update_status ModulePlayer::Update()
@@ -80,3 +73,51 @@ update_status ModulePlayer::Update()
 	return UPDATE_CONTINUE;
 }
 
+
+bool ModulePlayer::CreateLevers()
+{
+
+	//Lever Left
+	pivot_left = App->physics->CreateCircle(205, 586, 10, false);
+	lever_left = App->physics->CreateRectangle(210, 586, 70, 10, true);
+	pivot_force_left = App->physics->CreateCircle(280, 586, 5, true);
+
+	//Lever Right
+	pivot_Right = App->physics->CreateCircle(410, 586, 10, false);
+	//lever_Right = App->physics->CreateRectangle(410, 586, 70, 10, true);
+	pivot_force_Right = App->physics->CreateCircle(340, 586, 5, true);
+
+	int Chain_lever_left[14] = {
+		415, 598,
+		418, 580,
+		408, 576,
+		336, 605,
+		333, 610,
+		334, 615,
+		339, 620
+	};
+
+	int Chain_lever_right[30] = {
+		412, 600,
+		417, 596,
+		420, 591,
+		420, 584,
+		417, 580,
+		410, 576,
+		403, 577,
+		394, 580,
+		339, 604,
+		335, 607,
+		333, 612,
+		334, 617,
+		338, 620,
+		343, 620,
+		408, 601
+	};
+	
+	//lever_left = App->physics->CreatePolygon(0,0, Chain_lever_left, 14, 0);
+	lever_Right = App->physics->CreatePolygon(0, 0, Chain_lever_left, 14, 0);
+
+
+	return true;
+}

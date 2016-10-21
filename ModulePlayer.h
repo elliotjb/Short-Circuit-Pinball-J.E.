@@ -17,6 +17,9 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	//Create the 3 Levers
+	bool CreateLevers();
+
 public:
 
 	//Lever Left
