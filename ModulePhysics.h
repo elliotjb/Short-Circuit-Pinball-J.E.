@@ -44,7 +44,7 @@ public:
 
 	PhysBody* CreateCircle(int x, int y, int radius, bool typeBody);
 	PhysBody* CreateRectangle(int x, int y, int width, int height, bool typebody);
-	PhysBody* CreatePolygon(int x, int y, int* points, int size, float res);
+	PhysBody* CreatePolygon(int x, int y, int* points, int size, float res, bool typeBody);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
 	PhysBody* CreateChain(int x, int y, int* points, int size, float res, bool typeBody);
 	void CreateRevolutionJoint();

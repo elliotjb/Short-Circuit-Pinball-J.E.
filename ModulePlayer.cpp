@@ -63,12 +63,12 @@ update_status ModulePlayer::Update()
 		pivot_force_left->body->ApplyForceToCenter(b2Vec2(0.0f, 100.0f), true);
 	}
 
-	int x, y;
+	/*int x, y;
 	lever_left->GetPosition(x, y);
 	App->renderer->Blit(lever_left_Tex, x -10, y -5, NULL, 1.0f, lever_left->GetRotation());
 	int x_, y_;
-	lever_Right->GetPosition(x, y);
-	App->renderer->Blit(lever_right_Tex, x -10, y -5, NULL, 1.0f, lever_Right->GetRotation());
+	lever_Right->GetPosition(x_, y_);
+	App->renderer->Blit(lever_right_Tex, 335 - x_, 570 - y_, NULL, 1.0f, lever_Right->GetRotation());*/
 
 	return UPDATE_CONTINUE;
 }
@@ -79,7 +79,7 @@ bool ModulePlayer::CreateLevers()
 
 	//Lever Left
 	pivot_left = App->physics->CreateCircle(205, 586, 10, false);
-	lever_left = App->physics->CreateRectangle(210, 586, 70, 10, true);
+	//lever_left = App->physics->CreateRectangle(210, 586, 70, 10, true);
 	pivot_force_left = App->physics->CreateCircle(280, 586, 5, true);
 
 	//Lever Right
@@ -87,36 +87,31 @@ bool ModulePlayer::CreateLevers()
 	//lever_Right = App->physics->CreateRectangle(410, 586, 70, 10, true);
 	pivot_force_Right = App->physics->CreateCircle(340, 586, 5, true);
 
-	int Chain_lever_left[14] = {
-		415, 598,
-		418, 580,
-		408, 576,
+	int Chain_lever_left[16] = {
+		272, 620,
+		278, 619,
+		281, 613,
+		280, 607,
+		210, 576,
+		201, 577,
+		195, 586,
+		200, 596
+	};
+	
+
+	int Chain_lever_right[16] = {
+		420, 582,
+		414, 576,
+		406, 576,
 		336, 605,
 		333, 610,
 		334, 615,
-		339, 620
-	};
-
-	int Chain_lever_right[30] = {
-		412, 600,
-		417, 596,
-		420, 591,
-		420, 584,
-		417, 580,
-		410, 576,
-		403, 577,
-		394, 580,
-		339, 604,
-		335, 607,
-		333, 612,
-		334, 617,
-		338, 620,
-		343, 620,
-		408, 601
+		339, 620,
+		416, 597
 	};
 	
-	//lever_left = App->physics->CreatePolygon(0,0, Chain_lever_left, 14, 0);
-	lever_Right = App->physics->CreatePolygon(0, 0, Chain_lever_left, 14, 0);
+	lever_left = App->physics->CreatePolygon(0,0, Chain_lever_left, 16, 0, true);
+	lever_Right = App->physics->CreatePolygon(0, 0, Chain_lever_right, 16, 0, true);
 
 
 	return true;
