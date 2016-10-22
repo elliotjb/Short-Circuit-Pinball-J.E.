@@ -9,7 +9,7 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	circle = box = rick = NULL;
+	circle = box = PinballMap = PinballMap_2nd_Layer = NULL;
 	ray_on = false;
 	sensed = false;
 }
@@ -27,10 +27,15 @@ bool ModuleSceneIntro::Start()
 
 	circle = App->textures->Load("pinball/Ball.png"); 
 	box = App->textures->Load("pinball/crate.png");
-	rick = App->textures->Load("pinball/Map_Pinball.png");
+	PinballMap = App->textures->Load("pinball/Map_Pinball.png");
+	PinballMap_2nd_Layer = App->textures->Load("pinball/Map_Pinball_2nd_Layer.png");
+
 	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
-	//sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+
+	Lose_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH/2, SCREEN_HEIGHT + 10, SCREEN_WIDTH/2, 10);
+	
 	CreateMap();
+	CreateBouncers();
 
 	return ret;
 }
@@ -49,8 +54,7 @@ update_status ModuleSceneIntro::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 8, true));
-		circles.getLast()->data->listener = this;
+		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 7, true));
 	}
 
 	/*if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
@@ -64,7 +68,6 @@ update_status ModuleSceneIntro::Update()
 		{
 			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
 		}
-
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
@@ -83,16 +86,10 @@ update_status ModuleSceneIntro::Update()
 	fVector normal(0.0f, 0.0f);
 
 	// All draw functions ------------------------------------------------------
-	p2List_item<PhysBody*>* c = ricks.getFirst();
+	p2List_item<PhysBody*>* c;
 
 
-	while (c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
-		c = c->next;
-	}
+	App->renderer->Blit(PinballMap, 0, 0, NULL);
 
 	c = circles.getFirst();
 
@@ -121,6 +118,8 @@ update_status ModuleSceneIntro::Update()
 	}
 
 
+	App->renderer->Blit(PinballMap_2nd_Layer, 0, 0, NULL);
+
 
 	// ray -----------------
 	if(ray_on == true)
@@ -135,6 +134,16 @@ update_status ModuleSceneIntro::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
+
+	//Check GAME STATE
+	if (Game_Over == true)
+	{
+		lose_ball->body->GetWorld()->DestroyBody(lose_ball->body);
+		lose_ball = nullptr;
+		circles.add(App->physics->CreateCircle(620, 600, 8, true));
+		Game_Over = false;
+	}
+
 	return UPDATE_CONTINUE;
 }
 
@@ -142,358 +151,339 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
 
-	App->audio->PlayFx(bonus_fx);
+	//App->audio->PlayFx(bonus_fx);
 
-	/*
-	if(bodyA)
+	if(bodyA != nullptr)
 	{
-		bodyA->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
+		if (bodyB == Lose_sensor)
+		{
+			lose_ball = bodyA;
+			Game_Over = true;
+		}
 	}
 
-	if(bodyB)
-	{
-		bodyB->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}*/
 }
 
 
 bool ModuleSceneIntro::CreateMap()
 {
-	int rick_head[94] = {
-		215, 662,
-		40, 562,
-		93, 371,
-		120, 269,
-		128, 260,
-		122, 248,
-		124, 235,
-		130, 224,
-		143, 222,
-		154, 229,
-		164, 250,
-		170, 249,
-		144, 182,
-		177, 65,
-		187, 50,
-		205, 37,
-		224, 29,
-		242, 26,
-		260, 25,
-		406, 25,
-		422, 27,
-		436, 30,
-		449, 34,
-		460, 40,
-		470, 47,
-		478, 54,
-		486, 64,
-		490, 73,
-		650, 653,
-		648, 662,
-		638, 668,
-		625, 662,
-		621, 654,
-		594, 565,
-		582, 552,
-		511, 255,
-		504, 255,
-		513, 270,
-		534, 370,
-		578, 564,
-		400, 662,
-		735, 705,
-		722, -40,
-		-37, -50,
-		-25, 715,
-		215, 720,
-		214, 682
+	int rick_head[100] = {
+		215, 651,
+		40, 551,
+		93, 358,
+		130, 358,
+		156, 344,
+		159, 337,
+		132, 253,
+		128, 245,
+		123, 241,
+		124, 224,
+		130, 212,
+		140, 206,
+		153, 210,
+		165, 240,
+		168, 238,
+		144, 171,
+		174, 63,
+		183, 48,
+		199, 35,
+		217, 25,
+		240, 18,
+		260, 16,
+		403, 16,
+		419, 17,
+		433, 20,
+		446, 24,
+		459, 30,
+		469, 36,
+		478, 44,
+		486, 53,
+		490, 62,
+		650, 642,
+		648, 651,
+		638, 657,
+		623, 656,
+		615, 641,
+		588, 559,
+		582, 541,
+		511, 246,
+		504, 246,
+		500, 249,
+		467, 334,
+		468, 341,
+		496, 357,
+		533, 357,
+		578, 553,
+		400, 651,
+		430, 723,
+		180, 723,
+		210, 660
 	};
 
 	int PartUP_right[40] = {
-		455, 252,
-		482, 192,
-		459, 78,
-		443, 59,
-		424, 50,
-		408, 47,
-		378, 46,
-		377, 65,
-		397, 69,
-		398, 122,
-		438, 181,
-		447, 181,
-		437, 113,
-		435, 96,
-		439, 85,
-		449, 85,
-		455, 89,
-		462, 108,
-		480, 190,
-		453, 251
+		455, 241,
+		482, 181,
+		459, 67,
+		445, 48,
+		426, 38,
+		408, 34,
+		378, 34,
+		380, 46,
+		429, 48,
+		429, 62,
+		399, 63,
+		400, 108,
+		437, 161,
+		444, 158,
+		437, 89,
+		441, 80,
+		455, 80,
+		462, 92,
+		480, 179,
+		453, 240
 	};
 
 	int PartUP_center[22] = {
-		348, 67,
-		345, 67,
-		343, 65,
-		343, 58,
-		343, 52,
-		345, 49,
-		348, 48,
-		351, 49,
-		352, 52,
-		352, 62,
-		351, 66
+		348, 56,
+		345, 56,
+		343, 54,
+		343, 47,
+		343, 41,
+		345, 38,
+		348, 37,
+		351, 38,
+		352, 41,
+		352, 51,
+		351, 55
 	};
 
 	int PartUP_center_2[24] = {
-		320, 53,
-		319, 51,
-		317, 50,
-		315, 50,
-		313, 51,
-		312, 53,
-		312, 61,
-		313, 63,
-		316, 64,
-		318, 64,
-		320, 63,
-		320, 57
+		320, 42,
+		319, 40,
+		317, 39,
+		315, 39,
+		313, 40,
+		312, 42,
+		312, 50,
+		313, 52,
+		316, 53,
+		318, 53,
+		320, 52,
+		320, 46
 	};
 
 	int PartUp_Left[56] = {
-		228, 125,
-		235, 75,
-		210, 74,
-		206, 133,
-		200, 136,
-		196, 145,
-		190, 145,
-		189, 139,
-		198, 93,
-		202, 77,
-		205, 67,
-		212, 59,
-		226, 51,
-		242, 46,
-		256, 44,
-		275, 43,
-		287, 43,
-		287, 57,
-		284, 60,
-		256, 67,
-		249, 71,
-		241, 129,
-		239, 133,
-		234, 132,
-		232, 129,
-		229, 133,
-		226, 132,
-		227, 129
+		228, 114,
+		235, 64,
+		210, 63,
+		206, 122,
+		200, 125,
+		196, 134,
+		190, 134,
+		189, 128,
+		198, 82,
+		202, 66,
+		205, 56,
+		212, 48,
+		226, 40,
+		242, 35,
+		256, 33,
+		275, 32,
+		287, 32,
+		287, 46,
+		284, 49,
+		256, 56,
+		249, 60,
+		241, 118,
+		239, 122,
+		234, 121,
+		232, 118,
+		229, 122,
+		226, 121,
+		227, 118
 	};
 
 	int Part_Center_1[84] = {
-		366, 218,
-		365, 190,
-		363, 183,
-		359, 179,
-		354, 174,
-		348, 171,
-		343, 169,
-		337, 167,
-		331, 165,
-		323, 164,
-		310, 163,
-		302, 164,
-		293, 166,
-		287, 168,
-		281, 171,
-		276, 174,
-		271, 179,
-		268, 184,
-		266, 211,
-		264, 245,
-		265, 252,
-		268, 254,
-		273, 253,
-		275, 246,
-		276, 203,
-		280, 191,
-		287, 183,
-		298, 178,
-		312, 176,
-		328, 177,
-		337, 180,
-		345, 184,
-		351, 189,
-		354, 195,
-		355, 203,
-		355, 226,
-		355, 247,
-		356, 254,
-		361, 256,
-		366, 253,
-		366, 243,
-		366, 224
+		366, 207,
+		365, 179,
+		363, 172,
+		359, 168,
+		354, 163,
+		348, 160,
+		343, 158,
+		337, 156,
+		331, 154,
+		323, 153,
+		310, 152,
+		302, 153,
+		293, 155,
+		287, 157,
+		281, 160,
+		276, 163,
+		271, 168,
+		268, 173,
+		266, 200,
+		264, 234,
+		265, 241,
+		268, 243,
+		273, 242,
+		275, 235,
+		276, 192,
+		280, 180,
+		287, 172,
+		298, 167,
+		312, 165,
+		328, 166,
+		337, 169,
+		345, 173,
+		351, 178,
+		354, 184,
+		355, 192,
+		355, 215,
+		355, 236,
+		356, 243,
+		361, 245,
+		366, 242,
+		366, 232,
+		366, 213
 	};
 
 	int Part_Center_2[22] = {
-		309, 250,
-		309, 240,
+		309, 239,
 		309, 229,
-		309, 220,
-		310, 210,
-		315, 209,
-		320, 212,
-		321, 222,
-		321, 244,
-		320, 254,
-		312, 255
-	};
-
-	int Part_Down_Left[14] = {
-		169, 406,
-		174, 413,
-		203, 510,
-		195, 513,
-		184, 509,
-		144, 490,
-		160, 406
-	};
-
-	int Part_Right_Left[12] = {
-		460, 402,
-		473, 486,
-		466, 492,
-		424, 514,
-		415, 509,
-		455, 401
+		309, 218,
+		309, 209,
+		310, 199,
+		315, 198,
+		320, 201,
+		321, 211,
+		321, 233,
+		320, 243,
+		312, 244
 	};
 
 	int Part_Left[20] = {
-		127, 403,
-		102, 513,
-		102, 520,
-		199, 569,
-		200, 575,
-		194, 576,
-		95, 521,
-		94, 510,
-		120, 401,
-		125, 398
+		127, 392,
+		102, 502,
+		102, 509,
+		199, 558,
+		200, 564,
+		194, 565,
+		95, 510,
+		94, 499,
+		120, 390,
+		125, 387
 	};
 
 	int Part_Right[20] = {
-		504, 404,
-		525, 510,
-		526, 519,
-		525, 525,
-		423, 574,
-		418, 572,
-		424, 567,
-		521, 516,
-		500, 405,
-		501, 401
+		504, 393,
+		525, 499,
+		526, 508,
+		525, 514,
+		423, 563,
+		418, 561,
+		424, 556,
+		521, 505,
+		500, 394,
+		501, 390
 	};
 
-	int Boton_Left[30] = {
-		286, 103,
-		279, 104,
-		275, 107,
-		272, 112,
-		272, 118,
-		277, 121,
-		283, 122,
-		289, 122,
-		295, 121,
-		300, 119,
-		304, 115,
-		303, 110,
-		300, 106,
-		295, 104,
-		290, 103
+	int Left_Triangle[10] = {
+		188, 501,
+		157, 389,
+		142, 467,
+		143, 474,
+		147, 480
 	};
 
-	int Boton_Center[30] = {
-		315, 82,
-		310, 84,
-		306, 88,
-		306, 93,
-		310, 96,
-		315, 98,
-		321, 99,
-		326, 99,
-		331, 97,
-		335, 95,
-		338, 91,
-		335, 86,
-		331, 83,
-		325, 81,
-		320, 81
+	int Right_Triangle[10] = {
+		466, 390,
+		431, 501,
+		472, 481,
+		476, 475,
+		477, 467
 	};
 
-
-	int Boton_Right[32] = {
-		353, 103,
-		348, 104,
-		342, 107,
-		339, 111,
-		340, 116,
-		343, 120,
-		348, 122,
-		354, 123,
-		360, 123,
-		365, 122,
-		370, 119,
-		373, 115,
-		372, 110,
-		368, 106,
-		363, 104,
-		358, 103
-	};
-
-	int Part_center_Left_Withrest[18] = {
-		130, 262,
-		157, 347,
-		157, 351,
-		156, 354,
-		136, 368,
-		130, 370,
-		97, 369,
-		128, 332,
-		128, 265
-	};
-	int Part_center_Right_Withrest[20] = {
-		501, 258,
-		467, 347,
-		466, 352,
-		469, 357,
-		489, 368,
-		495, 370,
-		527, 369,
-		508, 312,
-		503, 284,
-		503, 263
-	};
-
-	ricks.add(App->physics->CreateChain(0, 0, rick_head, 94, 0, false));
+	ricks.add(App->physics->CreateChain(0, 0, rick_head, 100, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 40, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 22, 0.5f, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 24, 0.5f, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 56, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Center_1, 84, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Center_2, 22, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Down_Left, 14, 1.85f, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Right_Left, 12, 1.85f, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Left, 20, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Right, 20, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Boton_Left, 30, 2, false));
-	ricks.add(App->physics->CreateChain(0, 0, Boton_Center, 30, 2, false));
-	ricks.add(App->physics->CreateChain(0, 0, Boton_Right, 32, 2, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_center_Left_Withrest, 18, 1, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_center_Right_Withrest, 20, 1, false));
+	ricks.add(App->physics->CreateChain(0, 0, Left_Triangle, 10, 0, false));
+	ricks.add(App->physics->CreateChain(0, 0, Right_Triangle, 10, 0, false));
+	/*ricks.add(App->physics->CreateChain(0, 0, Part_Down_Left, 14, 1.85f, false));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Right_Left, 12, 1.85f, false));*/
+
+	circles.add(App->physics->CreateCircle(620, 600, 8, true));
 
 	return true;
+}
+
+
+void ModuleSceneIntro::CreateBouncers()
+{
+	int Left_Bouncer[16] = {
+		201, 501,
+		196, 503,
+		190, 501,
+		157, 388,
+		159, 384,
+		167, 383,
+		171, 388,
+		202, 493
+	};
+
+	int Right_Bouncer[16] = {
+		422, 503,
+		416, 500,
+		415, 494,
+		452, 387,
+		457, 383,
+		463, 384,
+		465, 389,
+		429, 501
+	};
+
+	int Orange_Bouncer_1[16] = {
+		312, 76,
+		317, 79,
+		327, 79,
+		332, 76,
+		332, 72,
+		327, 69,
+		317, 69,
+		312, 71
+	};
+
+	int Orange_Bouncer_2[16] = {
+		277, 100,
+		282, 102,
+		293, 102,
+		298, 100,
+		298, 96,
+		293, 93,
+		282, 93,
+		277, 96
+	};
+
+	int Orange_Bouncer_3[16] = {
+		347, 100,
+		352, 102,
+		363, 102,
+		368, 100,
+		368, 96,
+		363, 93,
+		352, 93,
+		347, 96
+	};
+
+	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Bouncer, 16, 1.5f, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Bouncer, 16, 1.5f, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_1, 16, 1.5f, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_2, 16, 1.5f, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_3, 16, 1.5f, false));
 }

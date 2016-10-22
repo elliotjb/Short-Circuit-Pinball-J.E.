@@ -6,6 +6,7 @@
 #include "ModuleRender.h"
 #include "ModuleSceneIntro.h"
 #include "ModuleTextures.h"
+#include "ModuleAudio.h"
 #include "p2Point.h"
 #include "math.h"
 
@@ -25,6 +26,7 @@ bool ModulePlayer::Start()
 	CreateLevers();
 	lever_left_Tex = App->textures->Load("pinball/LeftLever.png");
 	lever_right_Tex = App->textures->Load("pinball/RightLever.png");
+	lever_fx = App->audio->LoadFx("pinball/Audio/Fx/Flipers.wav");
 
 	App->physics->CreateRevolutionJoint();
 
@@ -45,13 +47,36 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update()
 {
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN|| App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
+	{
+		active_right = true;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
+	{
+		active_left = true;
+	}
+
 	if(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		pivot_force_Right->body->ApplyForceToCenter(b2Vec2(0.0f, -200.0f), true);
 	}
+
 	else
 	{
 		pivot_force_Right->body->ApplyForceToCenter(b2Vec2(0.0f, 100.0f), true);
+	}
+
+	if (active_left == true)
+	{
+		App->audio->PlayFx(lever_fx);
+		active_left = false;
+	}
+
+	if (active_right == true)
+	{
+		App->audio->PlayFx(lever_fx);
+		active_right = false;
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)

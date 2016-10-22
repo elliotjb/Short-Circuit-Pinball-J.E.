@@ -4,6 +4,7 @@
 #include "ModuleRender.h"
 #include "ModulePhysics.h"
 #include "ModulePlayer.h"
+#include "ModuleSceneIntro.h"
 #include "p2Point.h"
 #include "math.h"
 
@@ -47,9 +48,12 @@ update_status ModulePhysics::PreUpdate()
 		if(c->GetFixtureA()->IsSensor() && c->IsTouching())
 		{
 			PhysBody* pb1 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
-			PhysBody* pb2 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
-			if(pb1 && pb2 && pb1->listener)
+			PhysBody* pb2 = (PhysBody*)c->GetFixtureB()->GetBody()->GetUserData();
+			if (pb1 && pb2 && pb1->listener)
+			{
 				pb1->listener->OnCollision(pb1, pb2);
+			}
+
 		}
 	}
 
@@ -80,6 +84,8 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, bool is_dyn )
 	pbody->body = b;
 	b->SetUserData(pbody);
 	pbody->width = pbody->height = radius;
+
+	pbody->listener = App->scene_intro;
 
 	return pbody;
 }

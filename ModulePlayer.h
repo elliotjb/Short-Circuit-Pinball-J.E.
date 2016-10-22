@@ -35,6 +35,9 @@ public:
 	SDL_Texture* lever_left_Tex;
 	SDL_Texture* lever_right_Tex;
 
+	uint lever_fx;
+	bool active_left = false;
+	bool active_right = false;
 
 
 };
