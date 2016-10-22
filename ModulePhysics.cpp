@@ -222,20 +222,35 @@ void ModulePhysics::CreateRevolutionJoint()
 	revoluteJointDef_left.bodyA = App->player->lever_left->body;
 	revoluteJointDef_left.bodyB = App->player->pivot_left->body;
 	revoluteJointDef_left.collideConnected = false;
-	revoluteJointDef_left.localAnchorA.Set(PIXEL_TO_METERS(205), PIXEL_TO_METERS(586));//the top right corner of the box
+	revoluteJointDef_left.localAnchorA.Set(PIXEL_TO_METERS(15), PIXEL_TO_METERS(15));//the top right corner of the box
 	revoluteJointDef_left.localAnchorB.Set(0, 0);//center of the circle
+	revoluteJointDef_left.referenceAngle = 0;
 	revoluteJointDef_left.enableLimit = true;
 	revoluteJointDef_left.lowerAngle = 0 * DEGTORAD;
 	revoluteJointDef_left.upperAngle = 40 * DEGTORAD;
 	b2RevoluteJoint* rev_joint_left = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_left);
 
-	b2RevoluteJointDef revoluteJointDef_force_left;
+
+	/*b2RevoluteJointDef revoluteJointDef_force_left;
 	revoluteJointDef_force_left.bodyA = App->player->lever_left->body;
 	revoluteJointDef_force_left.bodyB = App->player->pivot_force_left->body;
 	revoluteJointDef_force_left.collideConnected = false;
-	revoluteJointDef_force_left.localAnchorA.Set(PIXEL_TO_METERS(270), PIXEL_TO_METERS(610));//the top right corner of the box
+	revoluteJointDef_force_left.localAnchorA.Set(PIXEL_TO_METERS(15), PIXEL_TO_METERS(15));//the top right corner of the box
 	revoluteJointDef_force_left.localAnchorB.Set(0, 0);//center of the circle
 	b2RevoluteJoint* rev_joint_force_left = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_force_left);
+
+	/*b2RevoluteJointDef revoluteJointDef_left;
+	revoluteJointDef_left.bodyA = App->player->lever_left->body;
+	revoluteJointDef_left.bodyB = App->player->pivot_left->body;
+	revoluteJointDef_left.collideConnected = false;
+	revoluteJointDef_left.localAnchorA.Set(PIXEL_TO_METERS(205), PIXEL_TO_METERS(586));//the top right corner of the box
+	revoluteJointDef_left.localAnchorB.Set(0, 0);//center of the circle
+	revoluteJointDef_left.enableLimit = true;
+	revoluteJointDef_left.lowerAngle = 0 * DEGTORAD;
+	revoluteJointDef_left.upperAngle = 40 * DEGTORAD;
+	b2RevoluteJoint* rev_joint_left = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_left);*/
+
+
 
 	b2RevoluteJointDef revoluteJointDef_right;
 	revoluteJointDef_right.bodyA = App->player->lever_Right->body;
