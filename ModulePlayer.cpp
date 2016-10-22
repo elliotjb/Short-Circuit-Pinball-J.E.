@@ -47,7 +47,7 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update()
 {
-	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN|| App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_DOWN || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
 	{
 		active_right = true;
 	}
@@ -57,7 +57,7 @@ update_status ModulePlayer::Update()
 		active_left = true;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		pivot_force_Right->body->ApplyForceToCenter(b2Vec2(0.0f, -200.0f), true);
 	}
@@ -122,7 +122,7 @@ bool ModulePlayer::CreateLevers()
 		195, 586,
 		200, 596
 	};
-	
+
 
 	int Chain_lever_right[16] = {
 		420, 582,
@@ -134,8 +134,8 @@ bool ModulePlayer::CreateLevers()
 		339, 620,
 		416, 597
 	};
-	
-	lever_left = App->physics->CreatePolygon(0,0, Chain_lever_left, 16, 0, true);
+
+	lever_left = App->physics->CreatePolygon(0, 0, Chain_lever_left, 16, 0, true);
 	lever_Right = App->physics->CreatePolygon(0, 0, Chain_lever_right, 16, 0, true);
 
 

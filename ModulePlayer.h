@@ -26,7 +26,7 @@ public:
 	PhysBody* pivot_left;
 	PhysBody* lever_left;
 	PhysBody* pivot_force_left;
-	
+
 	//lever Right
 	PhysBody* pivot_Right;
 	PhysBody* lever_Right;
