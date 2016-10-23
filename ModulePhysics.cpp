@@ -127,7 +127,6 @@ PhysBody * ModulePhysics::CreatePolygon(int x, int y, int* points, int size, flo
 		body.type = b2_staticBody;
 
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
-
 	b2Body* b = world->CreateBody(&body);
 
 	b2Vec2* vertices = new b2Vec2[size / 2];
@@ -223,12 +222,12 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float 
 
 void ModulePhysics::CreateRevolutionJoint()
 {
-
+	//Lever Left
 	b2RevoluteJointDef revoluteJointDef_left;
 	revoluteJointDef_left.bodyA = App->player->lever_left->body;
 	revoluteJointDef_left.bodyB = App->player->pivot_left->body;
 	revoluteJointDef_left.collideConnected = false;
-	revoluteJointDef_left.localAnchorA.Set(PIXEL_TO_METERS(205), PIXEL_TO_METERS(586));//the top right corner of the box
+	revoluteJointDef_left.localAnchorA.Set(PIXEL_TO_METERS(205), PIXEL_TO_METERS(575));//the top right corner of the box
 	revoluteJointDef_left.localAnchorB.Set(0, 0);//center of the circle
 	revoluteJointDef_left.enableLimit = true;
 	revoluteJointDef_left.lowerAngle = 0 * DEGTORAD;
@@ -239,15 +238,16 @@ void ModulePhysics::CreateRevolutionJoint()
 	revoluteJointDef_force_left.bodyA = App->player->lever_left->body;
 	revoluteJointDef_force_left.bodyB = App->player->pivot_force_left->body;
 	revoluteJointDef_force_left.collideConnected = false;
-	revoluteJointDef_force_left.localAnchorA.Set(PIXEL_TO_METERS(270), PIXEL_TO_METERS(610));//the top right corner of the box
+	revoluteJointDef_force_left.localAnchorA.Set(PIXEL_TO_METERS(270), PIXEL_TO_METERS(599));//the top right corner of the box
 	revoluteJointDef_force_left.localAnchorB.Set(0, 0);//center of the circle
 	b2RevoluteJoint* rev_joint_force_left = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_force_left);
 
+	//Lever Right
 	b2RevoluteJointDef revoluteJointDef_right;
 	revoluteJointDef_right.bodyA = App->player->lever_Right->body;
 	revoluteJointDef_right.bodyB = App->player->pivot_Right->body;
 	revoluteJointDef_right.collideConnected = false;
-	revoluteJointDef_right.localAnchorA.Set(PIXEL_TO_METERS(410), PIXEL_TO_METERS(586));//the top right corner of the box
+	revoluteJointDef_right.localAnchorA.Set(PIXEL_TO_METERS(410), PIXEL_TO_METERS(575));//the top right corner of the box
 	revoluteJointDef_right.localAnchorB.Set(0, 0);//center of the circle
 												  //revoluteJointDef_left.referenceAngle = 0;
 	revoluteJointDef_right.enableLimit = true;
@@ -259,9 +259,29 @@ void ModulePhysics::CreateRevolutionJoint()
 	revoluteJointDef_force_right.bodyA = App->player->lever_Right->body;
 	revoluteJointDef_force_right.bodyB = App->player->pivot_force_Right->body;
 	revoluteJointDef_force_right.collideConnected = false;
-	revoluteJointDef_force_right.localAnchorA.Set(PIXEL_TO_METERS(340), PIXEL_TO_METERS(610));//the top right corner of the box
+	revoluteJointDef_force_right.localAnchorA.Set(PIXEL_TO_METERS(340), PIXEL_TO_METERS(599));//the top right corner of the box
 	revoluteJointDef_force_right.localAnchorB.Set(0, 0);//center of the circle
 	b2RevoluteJoint* rev_joint_force_right = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_force_right);
+
+	//lever UP Left
+	b2RevoluteJointDef revoluteJointDef_left_UP;
+	revoluteJointDef_left_UP.bodyA = App->player->lever_UP_left->body;
+	revoluteJointDef_left_UP.bodyB = App->player->pivot_UP_left->body;
+	revoluteJointDef_left_UP.collideConnected = false;
+	revoluteJointDef_left_UP.localAnchorA.Set(PIXEL_TO_METERS(187), PIXEL_TO_METERS(144));//the top right corner of the box
+	revoluteJointDef_left_UP.localAnchorB.Set(0, 0);//center of the circle
+	revoluteJointDef_left_UP.enableLimit = true;
+	revoluteJointDef_left_UP.lowerAngle = 0 * DEGTORAD;
+	revoluteJointDef_left_UP.upperAngle = 62 * DEGTORAD;
+	b2RevoluteJoint* rev_joint_left_UP = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_left_UP);
+
+	b2RevoluteJointDef revoluteJointDef_force_left_UP;
+	revoluteJointDef_force_left_UP.bodyA = App->player->lever_UP_left->body;
+	revoluteJointDef_force_left_UP.bodyB = App->player->pivot_UP_force_left->body;
+	revoluteJointDef_force_left_UP.collideConnected = false;
+	revoluteJointDef_force_left_UP.localAnchorA.Set(PIXEL_TO_METERS(187), PIXEL_TO_METERS(170));//the top right corner of the box
+	revoluteJointDef_force_left_UP.localAnchorB.Set(0, 0);//center of the circle
+	b2RevoluteJoint* rev_joint_force_left_UP = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef_force_left_UP);
 }
 
 // 

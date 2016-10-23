@@ -82,10 +82,12 @@ update_status ModulePlayer::Update()
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT || App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
 		pivot_force_left->body->ApplyForceToCenter(b2Vec2(0.0f, -200.0f), true);
+		pivot_UP_force_left->body->ApplyForceToCenter(b2Vec2(50.0f, 0.0f), true);
 	}
 	else
 	{
 		pivot_force_left->body->ApplyForceToCenter(b2Vec2(0.0f, 100.0f), true);
+		pivot_UP_force_left->body->ApplyForceToCenter(b2Vec2(-10.0f, 0.0f), true);
 	}
 
 	/*int x, y;
@@ -103,38 +105,55 @@ bool ModulePlayer::CreateLevers()
 {
 
 	//Lever Left
-	pivot_left = App->physics->CreateCircle(205, 586, 10, false);
+	pivot_left = App->physics->CreateCircle(205, 575, 10, false);
 	//lever_left = App->physics->CreateRectangle(210, 586, 70, 10, true);
-	pivot_force_left = App->physics->CreateCircle(280, 586, 5, true);
+	pivot_force_left = App->physics->CreateCircle(280, 575, 5, true);
 
 	//Lever Right
-	pivot_Right = App->physics->CreateCircle(410, 586, 10, false);
+	pivot_Right = App->physics->CreateCircle(410, 575, 10, false);
 	//lever_Right = App->physics->CreateRectangle(410, 586, 70, 10, true);
-	pivot_force_Right = App->physics->CreateCircle(340, 586, 5, true);
+	pivot_force_Right = App->physics->CreateCircle(340, 575, 5, true);
+
+	//Lever UP Right
+	pivot_UP_left = App->physics->CreateCircle(187, 144, 5, false);
+	//lever_Right = App->physics->CreateRectangle(410, 586, 70, 10, true);
+	pivot_UP_force_left = App->physics->CreateCircle(187, 155, 2, true);
 
 	int Chain_lever_left[16] = {
-		272, 620,
-		278, 619,
-		281, 613,
-		280, 607,
-		210, 576,
-		201, 577,
-		195, 586,
-		200, 596
+		272, 609,
+		278, 608,
+		281, 602,
+		280, 596,
+		210, 565,
+		201, 566,
+		195, 575,
+		200, 585
 	};
 
 
 	int Chain_lever_right[16] = {
-		420, 582,
-		414, 576,
-		406, 576,
-		336, 605,
-		333, 610,
-		334, 615,
-		339, 620,
-		416, 597
+		420, 571,
+		414, 565,
+		406, 565,
+		336, 594,
+		333, 599,
+		334, 604,
+		339, 609,
+		416, 586
 	};
 
+	int Left_UP_Lever[16] = {
+		183, 144,
+		183, 172,
+		185, 174,
+		187, 174,
+		189, 173,
+		195, 143,
+		191, 137,
+		186, 137
+	};
+
+	lever_UP_left = App->physics->CreatePolygon(0, 0, Left_UP_Lever, 16, 0, true);
 	lever_left = App->physics->CreatePolygon(0, 0, Chain_lever_left, 16, 0, true);
 	lever_Right = App->physics->CreatePolygon(0, 0, Chain_lever_right, 16, 0, true);
 
