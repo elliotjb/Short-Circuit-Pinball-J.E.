@@ -37,7 +37,6 @@ public:
 	PhysBody* pivot_UP_left;
 	PhysBody* pivot_UP_force_left;
 
-
 	SDL_Texture* lever_left_Tex;
 	SDL_Texture* lever_right_Tex;
 

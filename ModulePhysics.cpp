@@ -90,7 +90,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, bool is_dyn)
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, bool is_dyn)
+PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, bool is_dyn, type type)
 {
 	b2BodyDef body;
 	if (is_dyn)
@@ -114,19 +114,21 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, bo
 	b->SetUserData(pbody);
 	pbody->width = width * 0.5f;
 	pbody->height = height * 0.5f;
+	pbody->type = type;
 
 	return pbody;
 }
 
-PhysBody * ModulePhysics::CreatePolygon(int x, int y, int* points, int size, float res, bool typeBody)
+PhysBody * ModulePhysics::CreatePolygon(int x, int y, int* points, int size, float res, bool isdyn, type type, bool is_sensor)
 {
 	b2BodyDef body;
-	if (typeBody)
+	if (isdyn)
 		body.type = b2_dynamicBody;
 	else
 		body.type = b2_staticBody;
 
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
 	b2Body* b = world->CreateBody(&body);
 
 	b2Vec2* vertices = new b2Vec2[size / 2];
@@ -140,8 +142,18 @@ PhysBody * ModulePhysics::CreatePolygon(int x, int y, int* points, int size, flo
 
 	b2FixtureDef fixture;
 	fixture.shape = &polygonShape;
-	fixture.restitution = res;
 	fixture.density = 1.0f;
+
+	if (is_sensor == true)
+	{
+		fixture.isSensor = true;
+	}
+
+	else
+	{
+		fixture.restitution = res;
+	}
+
 
 	b->CreateFixture(&fixture);
 
@@ -149,11 +161,12 @@ PhysBody * ModulePhysics::CreatePolygon(int x, int y, int* points, int size, flo
 	pbody->body = b;
 	b->SetUserData(pbody);
 	pbody->width = pbody->height = 0;
+	pbody->type = type;
 
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height)
+PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int height, type type)
 {
 	b2BodyDef body;
 	body.type = b2_staticBody;
@@ -176,9 +189,11 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	b->SetUserData(pbody);
 	pbody->width = width;
 	pbody->height = height;
+	pbody->type = type;
 
 	return pbody;
 }
+
 
 PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float res, bool typeBody)
 {

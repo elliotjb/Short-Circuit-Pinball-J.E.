@@ -30,12 +30,22 @@ bool ModuleSceneIntro::Start()
 	PinballMap = App->textures->Load("pinball/Map_Pinball.png");
 	PinballMap_2nd_Layer = App->textures->Load("pinball/Map_Pinball_2nd_Layer.png");
 
-	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
+	//Loading Sound Fx
+	left_triangle = App->audio->LoadFx("pinball/Audio/Fx/LeftTriangle.wav");
+	right_triangle = App->audio->LoadFx("pinball/Audio/Fx/LeftTriangle.wav");
+	orange_button = App->audio->LoadFx("pinball/Audio/Fx/OrangeButton.wav");
+	led_activation = App->audio->LoadFx("pinball/Audio/Fx/LedActivation.wav");
+	diana = App->audio->LoadFx("pinball/Audio/Fx/Diana.wav");
+	turbine = App->audio->LoadFx("pinball/Audio/Fx/Turbine.wav");
+	red_panel = App->audio->LoadFx("pinball/Audio/Fx/RedPanel.wav");
+	blue_led_reactivation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
+	all_led_activation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
 
-	Lose_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 10, SCREEN_WIDTH / 2, 10);
+	Lose_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 10, SCREEN_WIDTH / 2, 10, GAME_OVER);
 
 	CreateMap();
 	CreateBouncers();
+	CreateSensors();
 
 	return ret;
 }
@@ -155,14 +165,89 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA != nullptr)
 	{
-		if (bodyB == Lose_sensor)
+		if (bodyB->type == GAME_OVER)
 		{
 			lose_ball = bodyA;
 			Game_Over = true;
 		}
+
+		if (bodyB->type == ORANGE)
+		{
+			App->audio->PlayFx(orange_button);
+		}
+
+		if (bodyB->type == R_TRIANGLE)
+		{
+			App->audio->PlayFx(right_triangle);
+		}
+
+		if (bodyB->type == L_TRIANGLE)
+		{
+			App->audio->PlayFx(left_triangle);
+		}
+
+		if (bodyB->type == B_R_LED || bodyB->type == B_L_LED || bodyB->type == B_C_LED)
+		{
+			if (bodyB->type == B_R_LED)
+			{
+				if (rLed_activated == false)
+				{
+					App->audio->PlayFx(led_activation);
+					rLed_activated = true;
+				}
+				else
+				{
+					App->audio->PlayFx(blue_led_reactivation);
+				}
+			}
+
+			if (bodyB->type == B_L_LED)
+			{
+				if (lLed_activated == false)
+				{
+					App->audio->PlayFx(led_activation);
+					lLed_activated = true;
+				}
+				else
+				{
+					App->audio->PlayFx(blue_led_reactivation);
+				}
+			}
+			if (bodyB->type == B_C_LED)
+			{
+				if (cLed_activated == false)
+				{
+					App->audio->PlayFx(led_activation);
+					cLed_activated = true;
+				}
+				else
+				{
+					App->audio->PlayFx(blue_led_reactivation);
+				}
+			}
+		}
+
+		if (bodyB->type == DIANA)
+		{
+			App->audio->PlayFx(diana);
+		}
+
+		if (bodyB->type == TURBINE)
+		{
+			App->audio->PlayFx(turbine);
+		}
+
+		if (bodyB->type == RED_PANEL)
+		{
+			App->audio->PlayFx(red_panel);
+		}
+
 	}
 
+
+
 }
+
 
 
 bool ModuleSceneIntro::CreateMap()
@@ -494,9 +579,94 @@ void ModuleSceneIntro::CreateBouncers()
 		347, 96
 	};
 
-	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Bouncer, 16, 1.5f, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Bouncer, 16, 1.5f, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_1, 16, 1.5f, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_2, 16, 1.5f, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_3, 16, 1.5f, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Bouncer, 16, 1.5f, false, L_TRIANGLE, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Bouncer, 16, 1.5f, false, R_TRIANGLE, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_1, 16, 1.5f, false, ORANGE, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_2, 16, 1.5f, false, ORANGE, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_3, 16, 1.5f, false, ORANGE, false));
+}
+
+void ModuleSceneIntro::CreateSensors()
+{
+	int Left_B_Led[8] = {
+		299, 53,
+		299, 40,
+		303, 40,
+		303, 53
+	};
+
+	int Center_B_Led[8] = {
+		330, 51,
+		330, 40,
+		334, 40,
+		334, 51
+	};
+
+	int Right_B_Led[8] = {
+		361, 52,
+		361, 41,
+		365, 41,
+		365, 52
+	};
+
+	int Right_Diana[8] = {
+		488, 356,
+		472, 346,
+		469, 350,
+		485, 360
+	};
+
+	int Left_Diana[8] = {
+		152, 347,
+		135, 356,
+		137, 359,
+		154, 350
+	};
+
+	int Turbine[8] = {
+		313, 189,
+		319, 189,
+		319, 169,
+		313, 169
+	};
+
+	int Red_Panel_1[8] = {
+		424, 157,
+		420, 158,
+		427, 168,
+		431, 167
+	};
+
+	int Red_Panel_2[8] = {
+		416, 144,
+		412, 146,
+		418, 155,
+		422, 153
+	};
+
+	int Red_Panel_3[8] = {
+		407, 131,
+		404, 133,
+		411, 143,
+		414, 141
+	};
+
+	int Red_Panel_4[8] = {
+		399, 119,
+		396, 121,
+		401, 129,
+		405, 127
+	};
+
+
+	sensors.add(App->physics->CreatePolygon(0, 0, Left_B_Led, 8, NULL, false, B_L_LED, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Center_B_Led, 8, NULL, false, B_C_LED, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Right_B_Led, 8, NULL, false, B_R_LED, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Right_Diana, 8, NULL, false, DIANA, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Left_Diana, 8, NULL, false, DIANA, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Turbine, 8, NULL, false, TURBINE, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_1, 8, NULL, false, RED_PANEL, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_2, 8, NULL, false, RED_PANEL, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_3, 8, NULL, false, RED_PANEL, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_4, 8, NULL, false, RED_PANEL, true));
 }

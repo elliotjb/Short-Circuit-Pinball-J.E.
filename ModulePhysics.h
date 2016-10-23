@@ -13,6 +13,8 @@
 #define PIXEL_TO_METERS(p)  ((float) METER_PER_PIXEL * p)
 
 // Small class to return to other modules to track position and rotation of physics bodies
+enum type { GREEN_LED, RED_LED, B_R_LED, B_C_LED, B_L_LED, L_TRIANGLE, R_TRIANGLE, ORANGE, DIANA, GAME_OVER, LEVER, TURBINE, RED_PANEL };
+
 class PhysBody
 {
 public:
@@ -28,6 +30,7 @@ public:
 	int width, height;
 	b2Body* body;
 	Module* listener;
+	type type;
 };
 
 // Module --------------------------------------
@@ -42,12 +45,14 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	PhysBody* CreateCircle(int x, int y, int radius, bool typeBody);
-	PhysBody* CreateRectangle(int x, int y, int width, int height, bool typebody);
-	PhysBody* CreatePolygon(int x, int y, int* points, int size, float res, bool typeBody);
-	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
-	PhysBody* CreateChain(int x, int y, int* points, int size, float res, bool typeBody);
+	PhysBody* CreateCircle(int x, int y, int radius, bool isdyn);
+	PhysBody* CreateRectangle(int x, int y, int width, int height, bool isdyn, type type);
+	PhysBody* CreatePolygon(int x, int y, int* points, int size, float res, bool isdyn, type type, bool is_sensor);
+	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, type type);
+	PhysBody* CreateChain(int x, int y, int* points, int size, float res, bool isdyn);
+	
 	void CreateRevolutionJoint();
+	
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
 
