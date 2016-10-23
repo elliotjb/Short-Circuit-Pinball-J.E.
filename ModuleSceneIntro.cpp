@@ -220,28 +220,26 @@ bool ModuleSceneIntro::CreateMap()
 		210, 660
 	};
 
-	int PartUP_right[40] = {
+	int PartUP_right[34] = {
 		455, 241,
-		482, 181,
+		483, 178,
 		459, 67,
 		445, 48,
 		426, 38,
 		408, 34,
 		378, 34,
 		380, 46,
-		429, 48,
-		429, 62,
-		399, 63,
-		400, 108,
-		437, 161,
-		444, 158,
-		437, 89,
-		441, 80,
-		455, 80,
-		462, 92,
-		480, 179,
+		418, 47,
+		431, 51,
+		446, 60,
+		455, 70,
+		459, 81,
+		474, 150,
+		479, 175,
+		479, 181,
 		453, 240
 	};
+
 
 	int PartUP_center[22] = {
 		348, 56,
@@ -364,10 +362,10 @@ bool ModuleSceneIntro::CreateMap()
 
 	int Part_Left[20] = {
 		127, 392,
-		102, 502,
-		102, 509,
-		199, 558,
-		200, 564,
+		103, 501,
+		106, 506,
+		198, 554,
+		205, 560,
 		194, 565,
 		95, 510,
 		94, 499,
@@ -381,9 +379,9 @@ bool ModuleSceneIntro::CreateMap()
 		526, 508,
 		525, 514,
 		423, 563,
-		418, 561,
-		424, 556,
-		521, 505,
+		411, 560,
+		421, 553,
+		518, 505,
 		500, 394,
 		501, 390
 	};
@@ -404,8 +402,24 @@ bool ModuleSceneIntro::CreateMap()
 		477, 467
 	};
 
+	int Part_UP_Right_Second[26] = {
+		441, 164,
+		438, 163,
+		436, 160,
+		400, 108,
+		397, 72,
+		399, 68,
+		404, 67,
+		420, 67,
+		427, 70,
+		432, 76,
+		434, 87,
+		445, 160,
+		444, 163
+	};
+
 	ricks.add(App->physics->CreateChain(0, 0, rick_head, 100, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 40, 0, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 34, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 22, 0.5f, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 24, 0.5f, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 56, 0, false));
@@ -415,8 +429,7 @@ bool ModuleSceneIntro::CreateMap()
 	ricks.add(App->physics->CreateChain(0, 0, Part_Right, 20, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Left_Triangle, 10, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Right_Triangle, 10, 0, false));
-	/*ricks.add(App->physics->CreateChain(0, 0, Part_Down_Left, 14, 1.85f, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Right_Left, 12, 1.85f, false));*/
+	ricks.add(App->physics->CreateChain(0, 0, Part_UP_Right_Second, 26, 0, false));
 
 	circles.add(App->physics->CreateCircle(620, 600, 8, true));
 
