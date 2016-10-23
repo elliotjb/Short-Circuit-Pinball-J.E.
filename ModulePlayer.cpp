@@ -27,6 +27,7 @@ bool ModulePlayer::Start()
 	lever_left_Tex = App->textures->Load("pinball/LeftLever.png");
 	lever_right_Tex = App->textures->Load("pinball/RightLever.png");
 	lever_fx = App->audio->LoadFx("pinball/Audio/Fx/Flipers.wav");
+	lever_UP_Tex = App->textures->Load("pinball/UpLever.png");
 
 	App->physics->CreateRevolutionJoint();
 
@@ -90,12 +91,12 @@ update_status ModulePlayer::Update()
 		pivot_UP_force_left->body->ApplyForceToCenter(b2Vec2(-10.0f, 0.0f), true);
 	}
 
-	/*int x, y;
-	lever_left->GetPosition(x, y);
-	App->renderer->Blit(lever_left_Tex, x -10, y -5, NULL, 1.0f, lever_left->GetRotation());
-	int x_, y_;
-	lever_Right->GetPosition(x_, y_);
-	App->renderer->Blit(lever_right_Tex, 335 - x_, 570 - y_, NULL, 1.0f, lever_Right->GetRotation());*/
+	//Draw Imatge of lever left
+	App->renderer->Blit(lever_left_Tex, 190, 560, NULL, 1.0f, lever_left->GetRotation(), 10, 13);
+	//Draw Imatge of lever right
+	App->renderer->Blit(lever_right_Tex, 335, 560, NULL, 1.0f, lever_Right->GetRotation(), 78, 12);
+	//Draw Imatge of lever UP
+	App->renderer->Blit(lever_UP_Tex, 182, 132, NULL, 1.0f, lever_UP_left->GetRotation(), 8, 9);
 
 	return UPDATE_CONTINUE;
 }
