@@ -167,14 +167,16 @@ update_status ModuleSceneIntro::Update()
 			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(15, 30), true);
 		}
 
-		else if (App->player->Lives > 0)
+		else if (App->player->Lives > 1)
 		{
 			circles.add(App->physics->CreateCircle(620, 600, 8, true));
 			App->player->Lives--;
-			
 		}
+		else
+		{
+			App->player->Restart_game();
 
-
+		}
 
 		Game_Over = false;
 	}
@@ -199,6 +201,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyB->type == ORANGE)
 		{
 			App->audio->PlayFx(orange_button);
+			App->player->Score += 10;
 		}
 
 		if (bodyB->type == R_TRIANGLE)
@@ -213,6 +216,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if (bodyB->type == B_R_LED || bodyB->type == B_L_LED || bodyB->type == B_C_LED)
 		{
+			App->player->Score += 20;
 			if (bodyB->type == B_R_LED)
 			{
 				if (rLed_activated == false)
@@ -255,16 +259,39 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyB->type == DIANA)
 		{
 			App->audio->PlayFx(diana);
+			App->player->Score += 175;
 		}
 
 		if (bodyB->type == TURBINE)
 		{
 			App->audio->PlayFx(turbine);
+			App->player->Score += 1000;
 		}
 
-		if (bodyB->type == RED_PANEL)
+		if (bodyB->type == RED_PANEL_1 && Red_Panel1 == false)
 		{
+			Red_Panel1 = true;
 			App->audio->PlayFx(red_panel);
+			App->player->Score += 175;
+		}
+
+		if (bodyB->type == RED_PANEL_2 && Red_Panel2 == false)
+		{
+			Red_Panel2 = true;
+			App->audio->PlayFx(red_panel);
+			App->player->Score += 175;
+		}
+		if (bodyB->type == RED_PANEL_3 && Red_Panel3 == false)
+		{
+			Red_Panel3 = true;
+			App->audio->PlayFx(red_panel);
+			App->player->Score += 175;
+		}
+		if (bodyB->type == RED_PANEL_4 && Red_Panel4 == false)
+		{
+			Red_Panel4 = true;
+			App->audio->PlayFx(red_panel);
+			App->player->Score += 175;
 		}
 
 		if (bodyB->type == BLUE_BUTTON)
@@ -703,9 +730,9 @@ void ModuleSceneIntro::CreateSensors()
 	sensors.add(App->physics->CreatePolygon(0, 0, Right_Diana, 8, NULL, false, DIANA, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Left_Diana, 8, NULL, false, DIANA, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Turbine, 8, NULL, false, TURBINE, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_1, 8, NULL, false, RED_PANEL, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_2, 8, NULL, false, RED_PANEL, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_3, 8, NULL, false, RED_PANEL, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_4, 8, NULL, false, RED_PANEL, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_1, 8, NULL, false, RED_PANEL_1, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_2, 8, NULL, false, RED_PANEL_2, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_3, 8, NULL, false, RED_PANEL_3, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_4, 8, NULL, false, RED_PANEL_4, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Blue_Button, 8, NULL, false, BLUE_BUTTON, true));
 }

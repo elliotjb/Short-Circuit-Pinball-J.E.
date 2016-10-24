@@ -19,6 +19,7 @@ public:
 
 	//Create the 3 Levers
 	bool CreateLevers();
+	void Restart_game();
 
 public:
 
@@ -44,6 +45,7 @@ public:
 
 	uint Score;
 	uint Lives;
+	uint Last_score;
 	uint Extra_Balls;
 	bool ball_saved = false;
 
@@ -52,5 +54,7 @@ public:
 	bool active_left = false;
 	bool active_right = false;
 
+
+	char title[50];
 
 };

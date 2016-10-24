@@ -30,6 +30,7 @@ public:
 	//Pointers to balls
 	PhysBody* lose_ball = nullptr;
 	PhysBody* save = nullptr;
+	PhysBody* miniball = nullptr;
 
 	//Sensors
 	PhysBody* Lose_sensor;
@@ -59,6 +60,12 @@ public:
 	bool rLed_activated = false;
 	bool lLed_activated = false;
 	bool cLed_activated = false;
+
+	bool Red_Panel1 = false;
+	bool Red_Panel2 = false;
+	bool Red_Panel3 = false;
+	bool Red_Panel4 = false;
+
 
 };
 

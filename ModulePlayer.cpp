@@ -6,6 +6,7 @@
 #include "ModuleRender.h"
 #include "ModuleSceneIntro.h"
 #include "ModuleTextures.h"
+#include "ModuleWindow.h"
 #include "ModuleAudio.h"
 #include "p2Point.h"
 #include "math.h"
@@ -101,6 +102,9 @@ update_status ModulePlayer::Update()
 	//Draw Imatge of lever UP
 	App->renderer->Blit(lever_UP_Tex, 182, 132, NULL, 1.0f, lever_UP_left->GetRotation(), 8, 9);
 
+	sprintf_s(title, "Score: %06d - Lives: %02d - Last Score: %06d", Score, Lives, Last_score);
+	App->window->SetTitle(title);
+
 	return UPDATE_CONTINUE;
 }
 
@@ -163,4 +167,15 @@ bool ModulePlayer::CreateLevers()
 
 
 	return true;
+}
+
+void ModulePlayer::Restart_game()
+{
+	if (App->scene_intro->Game_Over == true)
+	{
+		Lives = 3;
+		Last_score = Score;
+		Score = 0;
+		App->scene_intro->circles.add(App->physics->CreateCircle(620, 600, 8, true));
+	}
 }
