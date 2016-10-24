@@ -307,35 +307,33 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 }
 
-
-
 bool ModuleSceneIntro::CreateMap()
 {
 	int rick_head[100] = {
-		215, 651,
-		40, 551,
+		216, 649,
+		40, 547,
 		93, 358,
 		130, 358,
 		156, 344,
 		159, 337,
 		132, 253,
 		128, 245,
-		123, 241,
-		124, 224,
-		130, 212,
-		140, 206,
-		153, 210,
+		124, 239,
+		125, 226,
+		132, 217,
+		144, 213,
+		155, 214,
 		165, 240,
 		168, 238,
 		144, 171,
 		174, 63,
-		183, 48,
-		199, 35,
-		217, 25,
-		240, 18,
-		260, 16,
-		403, 16,
-		419, 17,
+		183, 45,
+		199, 32,
+		216, 23,
+		240, 17,
+		259, 15,
+		404, 15,
+		420, 17,
 		433, 20,
 		446, 24,
 		459, 30,
@@ -357,8 +355,8 @@ bool ModuleSceneIntro::CreateMap()
 		468, 341,
 		496, 357,
 		533, 357,
-		578, 553,
-		400, 651,
+		578, 550,
+		397, 648,
 		430, 723,
 		180, 723,
 		210, 660
@@ -385,41 +383,36 @@ bool ModuleSceneIntro::CreateMap()
 	};
 
 
-	int PartUP_center[22] = {
-		348, 56,
-		345, 56,
-		343, 54,
+	int PartUP_center[18] = {
 		343, 47,
-		343, 41,
-		345, 38,
-		348, 37,
-		351, 38,
-		352, 41,
-		352, 51,
-		351, 55
+		343, 40,
+		343, 37,
+		346, 34,
+		349, 34,
+		352, 37,
+		352, 48,
+		349, 50,
+		346, 50
 	};
 
-	int PartUP_center_2[24] = {
-		320, 42,
-		319, 40,
-		317, 39,
-		315, 39,
-		313, 40,
-		312, 42,
-		312, 50,
-		313, 52,
-		316, 53,
-		318, 53,
-		320, 52,
-		320, 46
+	int PartUP_center_2[18] = {
+		312, 47,
+		312, 40,
+		312, 37,
+		315, 34,
+		318, 34,
+		321, 37,
+		321, 48,
+		318, 50,
+		315, 50
 	};
 
-	int PartUp_Left[56] = {
-		228, 114,
-		235, 64,
-		210, 63,
-		206, 122,
-		200, 125,
+	int PartUp_Left[52] = {
+		227, 118,
+		225, 116,
+		205, 116,
+		203, 118,
+		201, 122,
 		196, 134,
 		190, 134,
 		189, 128,
@@ -430,8 +423,8 @@ bool ModuleSceneIntro::CreateMap()
 		226, 40,
 		242, 35,
 		256, 33,
-		275, 32,
-		287, 32,
+		277, 33,
+		287, 33,
 		287, 46,
 		284, 49,
 		256, 56,
@@ -439,69 +432,76 @@ bool ModuleSceneIntro::CreateMap()
 		241, 118,
 		239, 122,
 		234, 121,
-		232, 118,
-		229, 122,
-		226, 121,
-		227, 118
+		231, 119,
+		229, 120
 	};
 
-	int Part_Center_1[84] = {
-		366, 207,
-		365, 179,
-		363, 172,
-		359, 168,
-		354, 163,
-		348, 160,
-		343, 158,
-		337, 156,
-		331, 154,
-		323, 153,
-		310, 152,
-		302, 153,
-		293, 155,
-		287, 157,
-		281, 160,
-		276, 163,
-		271, 168,
-		268, 173,
-		266, 200,
+	int Part_Center_1[98] = {
+		367, 211,
+		366, 193,
+		364, 184,
+		360, 174,
+		355, 168,
+		350, 165,
+		342, 161,
+		332, 158,
+		322, 157,
+		311, 157,
+		300, 158,
+		293, 160,
+		285, 163,
+		279, 168,
+		274, 174,
+		269, 181,
+		266, 191,
+		265, 215,
+		264, 228,
 		264, 234,
-		265, 241,
-		268, 243,
-		273, 242,
-		275, 235,
-		276, 192,
-		280, 180,
-		287, 172,
-		298, 167,
-		312, 165,
-		328, 166,
-		337, 169,
-		345, 173,
-		351, 178,
-		354, 184,
-		355, 192,
-		355, 215,
-		355, 236,
-		356, 243,
-		361, 245,
-		366, 242,
-		366, 232,
-		366, 213
+		265, 236,
+		267, 237,
+		270, 237,
+		273, 236,
+		275, 233,
+		276, 209,
+		276, 190,
+		278, 182,
+		281, 177,
+		286, 172,
+		293, 169,
+		304, 166,
+		314, 165,
+		325, 166,
+		335, 169,
+		343, 173,
+		348, 177,
+		353, 184,
+		355, 195,
+		355, 227,
+		355, 232,
+		356, 235,
+		358, 237,
+		361, 238,
+		363, 238,
+		365, 237,
+		367, 235,
+		368, 233,
+		367, 213
 	};
 
-	int Part_Center_2[22] = {
-		309, 239,
+	int Part_Center_2[26] = {
+		310, 234,
 		309, 229,
 		309, 218,
 		309, 209,
-		310, 199,
-		315, 198,
-		320, 201,
-		321, 211,
-		321, 233,
-		320, 243,
-		312, 244
+		310, 204,
+		314, 200,
+		318, 200,
+		321, 203,
+		322, 209,
+		322, 230,
+		319, 235,
+		316, 237,
+		313, 237
 	};
 
 	int Part_Left[20] = {
@@ -564,11 +564,11 @@ bool ModuleSceneIntro::CreateMap()
 
 	ricks.add(App->physics->CreateChain(0, 0, rick_head, 100, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 34, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 22, 0.5f, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 24, 0.5f, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 56, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Center_1, 84, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Center_2, 22, 0, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 18, 0.5f, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 18, 0.5f, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 52, 0, false));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Center_1, 98, 0, false));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Center_2, 26, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Left, 20, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Part_Right, 20, 0, false));
 	ricks.add(App->physics->CreateChain(0, 0, Left_Triangle, 10, 0, false));
@@ -638,11 +638,29 @@ void ModuleSceneIntro::CreateBouncers()
 		347, 96
 	};
 
+	int Left_Up_Triangle[8] = {
+		133, 256,
+		158, 334,
+		159, 328,
+		135, 254
+	};
+
+	int Right_Up_Triangle[8] = {
+		501, 247,
+		468, 335,
+		465, 332,
+		498, 249
+	};
+
+
 	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Bouncer, 16, 1.5f, false, L_TRIANGLE, false));
 	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Bouncer, 16, 1.5f, false, R_TRIANGLE, false));
 	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_1, 16, 1.5f, false, ORANGE, false));
 	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_2, 16, 1.5f, false, ORANGE, false));
 	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_3, 16, 1.5f, false, ORANGE, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false));
+
 }
 
 void ModuleSceneIntro::CreateSensors()
@@ -724,6 +742,85 @@ void ModuleSceneIntro::CreateSensors()
 		155, 220
 	};
 
+	int Red_Led_1[8] = {
+		80, 478,
+		76, 497,
+		83, 499,
+		87, 480,
+	};
+
+	int Red_Led_4[8] = {
+		532, 480,
+		536, 498,
+		544, 496,
+		540, 478
+	};
+
+	int Red_Led_2[8] = {
+		129, 450,
+		125, 467,
+		134, 469,
+		137, 455,
+	};
+
+	int Red_Led_3[8] = {
+		485, 455,
+		487, 469,
+		495, 466,
+		493, 451
+	};
+
+	int Left_Pass[8] = {
+		278, 18,
+		280, 30,
+		274, 30,
+		272, 18,
+	};
+
+	int Right_Pass[8] = {
+		387, 18,
+		384, 30,
+		390, 30,
+		393, 18
+	};
+
+	int Left_Not_Pass[8] = {
+		298, 18,
+		300, 30,
+		294, 30,
+		292, 18,
+	};
+
+	int Right_Not_Pass[8] = {
+		367, 18,
+		362, 30,
+		370, 30,
+		373, 18
+	};
+
+	int Entrance[8] = {
+		519, 260,
+		521, 267,
+		540, 251,
+		538, 245,
+		
+	};
+
+	int Not_Entrance[8] = {	
+		511, 234,
+		508, 228,
+		529, 217,
+		528, 211
+	};
+
+	int Black_Box[8] = {
+		437, 89,
+		457, 89,
+		455, 80,
+		435, 80
+	};
+
+
 	sensors.add(App->physics->CreatePolygon(0, 0, Left_B_Led, 8, NULL, false, B_L_LED, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Center_B_Led, 8, NULL, false, B_C_LED, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Right_B_Led, 8, NULL, false, B_R_LED, true));
@@ -735,4 +832,16 @@ void ModuleSceneIntro::CreateSensors()
 	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_3, 8, NULL, false, RED_PANEL_3, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_4, 8, NULL, false, RED_PANEL_4, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Blue_Button, 8, NULL, false, BLUE_BUTTON, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_1, 8, NULL, false, RED_LED_1, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_2, 8, NULL, false, RED_LED_3, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_3, 8, NULL, false, RED_LED_4, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_4, 8, NULL, false, RED_LED_2, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Left_Pass, 8, NULL, false, LEFT_PASS, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Right_Pass, 8, NULL, false, RIGHT_PASS, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Left_Not_Pass, 8, NULL, false, LEFT_PASS, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Right_Not_Pass, 8, NULL, false, RIGHT_PASS, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Entrance, 8, NULL, false, ENTRANCE, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Not_Entrance, 8, NULL, false, NOT_ENTRANCE, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Black_Box, 8, NULL, false, BLACK_BOX, true));
+
 }
