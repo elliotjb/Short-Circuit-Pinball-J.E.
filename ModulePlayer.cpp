@@ -13,6 +13,9 @@
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	lever_left_Tex = lever_right_Tex = NULL;
+	Lives = 3;
+	Extra_Balls = 0;
+	Score = 0;
 }
 
 ModulePlayer::~ModulePlayer()

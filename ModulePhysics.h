@@ -13,7 +13,7 @@
 #define PIXEL_TO_METERS(p)  ((float) METER_PER_PIXEL * p)
 
 // Small class to return to other modules to track position and rotation of physics bodies
-enum type { GREEN_LED, RED_LED, B_R_LED, B_C_LED, B_L_LED, L_TRIANGLE, R_TRIANGLE, ORANGE, DIANA, GAME_OVER, LEVER, TURBINE, RED_PANEL };
+enum type { GREEN_LED, RED_LED, B_R_LED, B_C_LED, B_L_LED, L_TRIANGLE, R_TRIANGLE, ORANGE, DIANA, GAME_OVER, LEVER, TURBINE, RED_PANEL, BLUE_BUTTON };
 
 class PhysBody
 {

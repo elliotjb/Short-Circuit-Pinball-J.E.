@@ -37,12 +37,18 @@ public:
 	PhysBody* pivot_UP_left;
 	PhysBody* pivot_UP_force_left;
 
+	//Textures
 	SDL_Texture* lever_left_Tex;
 	SDL_Texture* lever_right_Tex;
 	SDL_Texture* lever_UP_Tex;
 
+	uint Score;
+	uint Lives;
+	uint Extra_Balls;
+	bool ball_saved = false;
 
 	uint lever_fx;
+
 	bool active_left = false;
 	bool active_right = false;
 

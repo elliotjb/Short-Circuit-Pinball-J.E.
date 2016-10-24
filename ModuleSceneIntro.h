@@ -27,7 +27,9 @@ public:
 	p2List<PhysBody*> bouncers;
 	p2List<PhysBody*> sensors;
 
+	//Pointers to balls
 	PhysBody* lose_ball = nullptr;
+	PhysBody* save = nullptr;
 
 	//Sensors
 	PhysBody* Lose_sensor;

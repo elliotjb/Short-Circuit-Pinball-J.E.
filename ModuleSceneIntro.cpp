@@ -6,6 +6,7 @@
 #include "ModuleTextures.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
+#include "ModulePlayer.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -144,13 +145,37 @@ update_status ModuleSceneIntro::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
+	if (App->player->ball_saved == true)
+	{
+		save->body->GetWorld()->DestroyBody(save->body);
+		circles.add(App->physics->CreateCircle(620, 600, 8, true));
+		save = nullptr;
+		App->player->ball_saved = false;
+	}
+
 
 	//Check GAME STATE
 	if (Game_Over == true)
 	{
 		lose_ball->body->GetWorld()->DestroyBody(lose_ball->body);
 		lose_ball = nullptr;
-		circles.add(App->physics->CreateCircle(620, 600, 8, true));
+		
+		if (App->player->Extra_Balls > 0)
+		{
+			App->player->Extra_Balls--;
+			circles.add(App->physics->CreateCircle(150, 250, 8, true));
+			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(15, 30), true);
+		}
+
+		else if (App->player->Lives > 0)
+		{
+			circles.add(App->physics->CreateCircle(620, 600, 8, true));
+			App->player->Lives--;
+			
+		}
+
+
+
 		Game_Over = false;
 	}
 
@@ -240,6 +265,13 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyB->type == RED_PANEL)
 		{
 			App->audio->PlayFx(red_panel);
+		}
+
+		if (bodyB->type == BLUE_BUTTON)
+		{
+			save = bodyA;
+			App->player->Extra_Balls++;
+			App->player->ball_saved = true;
 		}
 
 	}
@@ -658,6 +690,12 @@ void ModuleSceneIntro::CreateSensors()
 		405, 127
 	};
 
+	int Blue_Button[8] = {
+		125, 230,
+		129, 238,
+		158, 229,
+		155, 220
+	};
 
 	sensors.add(App->physics->CreatePolygon(0, 0, Left_B_Led, 8, NULL, false, B_L_LED, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Center_B_Led, 8, NULL, false, B_C_LED, true));
@@ -669,4 +707,5 @@ void ModuleSceneIntro::CreateSensors()
 	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_2, 8, NULL, false, RED_PANEL, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_3, 8, NULL, false, RED_PANEL, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_4, 8, NULL, false, RED_PANEL, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Blue_Button, 8, NULL, false, BLUE_BUTTON, true));
 }
