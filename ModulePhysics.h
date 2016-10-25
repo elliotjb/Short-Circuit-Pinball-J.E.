@@ -12,13 +12,20 @@
 #define METERS_TO_PIXELS(m) ((int) floor(PIXELS_PER_METER * m))
 #define PIXEL_TO_METERS(p)  ((float) METER_PER_PIXEL * p)
 
-// Small class to return to other modules to track position and rotation of physics bodies
 enum type {
 	GREEN_LED, RED_LED_1, RED_LED_2, RED_LED_3, RED_LED_4, B_R_LED, B_C_LED, B_L_LED,
 	L_TRIANGLE, R_TRIANGLE, ORANGE, DIANA, GAME_OVER, LEVER, TURBINE, RED_PANEL_1, RED_PANEL_2,
 	RED_PANEL_3, RED_PANEL_4, BLUE_BUTTON, LEFT_PASS, LEFT_NOT_PASS, RIGHT_PASS, RIGHT_NOT_PASS,
 	ENTRANCE, NOT_ENTRANCE, BLACK_BOX, NO_EFFECT };
 
+enum _entityCategory{
+	FLOOR_1 = 0x0001,
+	FLOOR_2 = 0x0002,
+	BALL_1	= 0x0004,
+	BALL_2	= 0x0008	
+};
+
+// Small class to return to other modules to track position and rotation of physics bodies
 class PhysBody
 {
 public:
@@ -49,11 +56,11 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	PhysBody* CreateCircle(int x, int y, int radius, bool isdyn);
-	PhysBody* CreateRectangle(int x, int y, int width, int height, bool isdyn, type type);
-	PhysBody* CreatePolygon(int x, int y, int* points, int size, float res, bool isdyn, type type, bool is_sensor);
+	PhysBody* CreateCircle(int x, int y, int radius, bool isdyn, uint16 categoryBits, uint16 maskBits);
+	PhysBody* CreateRectangle(int x, int y, int width, int height, bool isdyn, type type, uint16 categoryBits, uint16 maskBits);
+	PhysBody* CreatePolygon(int x, int y, int* points, int size, float res, bool isdyn, type type, bool is_sensor, uint16 categoryBits, uint16 maskBits);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, type type);
-	PhysBody* CreateChain(int x, int y, int* points, int size, float res, bool isdyn);
+	PhysBody* CreateChain(int x, int y, int* points, int size, float res, bool isdyn, uint16 categoryBits, uint16 maskBits);
 	
 	void CreateRevolutionJoint();
 	

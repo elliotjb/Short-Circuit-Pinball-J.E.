@@ -60,7 +60,7 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, bool is_dyn)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, bool is_dyn, uint16 categoryBits, uint16 maskBits)
 {
 	b2BodyDef body;
 	body.bullet = true;
@@ -78,6 +78,8 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, bool is_dyn)
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
 	fixture.density = 1.0f;
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
 
 	b->CreateFixture(&fixture);
 
@@ -91,7 +93,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, bool is_dyn)
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, bool is_dyn, type type)
+PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, bool is_dyn, type type, uint16 categoryBits, uint16 maskBits)
 {
 	b2BodyDef body;
 	if (is_dyn)
@@ -107,6 +109,8 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, bo
 	b2FixtureDef fixture;
 	fixture.shape = &box;
 	fixture.density = 1.0f;
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
 
 	b->CreateFixture(&fixture);
 
@@ -120,7 +124,7 @@ PhysBody* ModulePhysics::CreateRectangle(int x, int y, int width, int height, bo
 	return pbody;
 }
 
-PhysBody * ModulePhysics::CreatePolygon(int x, int y, int* points, int size, float res, bool isdyn, type type, bool is_sensor)
+PhysBody * ModulePhysics::CreatePolygon(int x, int y, int* points, int size, float res, bool isdyn, type type, bool is_sensor, uint16 categoryBits, uint16 maskBits)
 {
 	b2BodyDef body;
 	if (isdyn)
@@ -144,6 +148,8 @@ PhysBody * ModulePhysics::CreatePolygon(int x, int y, int* points, int size, flo
 	b2FixtureDef fixture;
 	fixture.shape = &polygonShape;
 	fixture.density = 1.0f;
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
 
 	if (is_sensor == true)
 	{
@@ -154,7 +160,6 @@ PhysBody * ModulePhysics::CreatePolygon(int x, int y, int* points, int size, flo
 	{
 		fixture.restitution = res;
 	}
-
 
 	b->CreateFixture(&fixture);
 
@@ -196,7 +201,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 }
 
 
-PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float res, bool typeBody)
+PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float res, bool typeBody, uint16 categoryBits, uint16 maskBits)
 {
 	b2BodyDef body;
 	if (typeBody)
@@ -223,6 +228,8 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float 
 	b2FixtureDef fixture;
 	fixture.restitution = res;
 	fixture.shape = &shape;
+	fixture.filter.categoryBits = categoryBits;
+	fixture.filter.maskBits = maskBits;
 
 	b->CreateFixture(&fixture);
 

@@ -113,19 +113,19 @@ bool ModulePlayer::CreateLevers()
 {
 
 	//Lever Left
-	pivot_left = App->physics->CreateCircle(205, 575, 10, false);
+	pivot_left = App->physics->CreateCircle(205, 575, 10, false,FLOOR_1, FLOOR_1);
 	//lever_left = App->physics->CreateRectangle(210, 586, 70, 10, true);
-	pivot_force_left = App->physics->CreateCircle(280, 575, 5, true);
+	pivot_force_left = App->physics->CreateCircle(280, 575, 5, true, FLOOR_1, FLOOR_1);
 
 	//Lever Right
-	pivot_Right = App->physics->CreateCircle(410, 575, 10, false);
+	pivot_Right = App->physics->CreateCircle(410, 575, 10, false, FLOOR_1, FLOOR_1);
 	//lever_Right = App->physics->CreateRectangle(410, 586, 70, 10, true);
-	pivot_force_Right = App->physics->CreateCircle(340, 575, 5, true);
+	pivot_force_Right = App->physics->CreateCircle(340, 575, 5, true, FLOOR_1, FLOOR_1);
 
 	//Lever UP Right
-	pivot_UP_left = App->physics->CreateCircle(187, 144, 5, false);
+	pivot_UP_left = App->physics->CreateCircle(187, 144, 5, false, FLOOR_1, FLOOR_1);
 	//lever_Right = App->physics->CreateRectangle(410, 586, 70, 10, true);
-	pivot_UP_force_left = App->physics->CreateCircle(187, 155, 2, true);
+	pivot_UP_force_left = App->physics->CreateCircle(187, 155, 2, true, FLOOR_1, FLOOR_1);
 
 	int Chain_lever_left[16] = {
 		272, 609,
@@ -161,9 +161,9 @@ bool ModulePlayer::CreateLevers()
 		186, 137
 	};
 
-	lever_UP_left = App->physics->CreatePolygon(0, 0, Left_UP_Lever, 16, 0.5f, true, LEVER, false);
-	lever_left = App->physics->CreatePolygon(0, 0, Chain_lever_left, 16, 0.5f, true, LEVER, false);
-	lever_Right = App->physics->CreatePolygon(0, 0, Chain_lever_right, 16, 0.5f, true, LEVER, false);
+	lever_UP_left = App->physics->CreatePolygon(0, 0, Left_UP_Lever, 16, 0.5f, true, LEVER, false, FLOOR_1, FLOOR_1 | BALL_1);
+	lever_left = App->physics->CreatePolygon(0, 0, Chain_lever_left, 16, 0.5f, true, LEVER, false, FLOOR_1, FLOOR_1 | BALL_1);
+	lever_Right = App->physics->CreatePolygon(0, 0, Chain_lever_right, 16, 0.5f, true, LEVER, false, FLOOR_1, FLOOR_1 | BALL_1);
 
 
 	return true;
@@ -176,6 +176,6 @@ void ModulePlayer::Restart_game()
 		Lives = 3;
 		Last_score = Score;
 		Score = 0;
-		App->scene_intro->circles.add(App->physics->CreateCircle(620, 600, 8, true));
+		App->scene_intro->circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, FLOOR_1 | BALL_1));
 	}
 }

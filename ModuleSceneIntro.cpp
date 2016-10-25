@@ -90,7 +90,7 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 7, true));
+		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 7, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
@@ -156,11 +156,15 @@ update_status ModuleSceneIntro::Update()
 	}
 	DrawLeds();
 
-	c = circles.getFirst();
 
+	//Drawing balls of 1st floor
+	c = circles.getFirst();
 	while (c != NULL)
 	{
-		DrawBall(c->data);
+		if (c->data->body->GetFixtureList()->GetFilterData().categoryBits == BALL_1)
+		{
+			DrawBall(c->data);
+		}
 		c = c->next;
 	}
 
@@ -183,9 +187,19 @@ update_status ModuleSceneIntro::Update()
 	if (App->player->ball_saved == true)
 	{
 		save->body->GetWorld()->DestroyBody(save->body);
-		circles.add(App->physics->CreateCircle(620, 600, 8, true));
+		circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
 		save = nullptr;
 		App->player->ball_saved = false;
+	}
+
+	c = circles.getFirst();
+	while (c != NULL)
+	{
+		if (c->data->body->GetFixtureList()->GetFilterData().categoryBits == BALL_2)
+		{
+			DrawBall(c->data);
+		}
+		c = c->next;
 	}
 
 
@@ -198,13 +212,13 @@ update_status ModuleSceneIntro::Update()
 		if (App->player->Extra_Balls > 0)
 		{
 			App->player->Extra_Balls--;
-			circles.add(App->physics->CreateCircle(150, 250, 8, true));
+			circles.add(App->physics->CreateCircle(150, 250, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
 			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(15, 30), true);
 		}
 
 		else if (App->player->Lives > 1)
 		{
-			circles.add(App->physics->CreateCircle(620, 600, 8, true));
+			circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
 			App->player->Lives--;
 		}
 		else
@@ -723,20 +737,38 @@ bool ModuleSceneIntro::CreateMap()
 		444, 163
 	};
 
-	ricks.add(App->physics->CreateChain(0, 0, rick_head, 100, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 34, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 18, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 18, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 52, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Center_1, 98, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Center_2, 26, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Left, 20, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Right, 20, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, Left_Triangle, 10, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, Right_Triangle, 10, NULL, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_UP_Right_Second, 26, NULL, false));
+	int Ramp[24] = {
+		209, 120,
+		209, 128,
+		197, 128,
+		210, 11,
+		246, 11,
+		237, 128,
+		225, 128,
+		225, 120,
+		232, 120,
+		240, 15,
+		214, 15,
+		203, 120
+	};
 
-	circles.add(App->physics->CreateCircle(620, 600, 8, true));
+	ricks.add(App->physics->CreateChain(0, 0, rick_head, 100, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 34, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 18, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 18, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 52, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Center_1, 98, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Center_2, 26, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Left, 20, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Right, 20, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, Left_Triangle, 10, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, Right_Triangle, 10, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, Part_UP_Right_Second, 26, NULL, false, FLOOR_1, BALL_1));
+	ricks.add(App->physics->CreateChain(0, 0, Ramp, 24, NULL, false, FLOOR_2, BALL_2));
+
+
+	circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
+	circles.add(App->physics->CreateCircle(210, 103, 8, true, BALL_2, BALL_1 | FLOOR_2));
 
 	return true;
 }
@@ -813,13 +845,13 @@ void ModuleSceneIntro::CreateBouncers()
 	};
 
 
-	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Bouncer, 16, 1.5f, false, L_TRIANGLE, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Bouncer, 16, 1.5f, false, R_TRIANGLE, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_1, 16, 1.5f, false, ORANGE, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_2, 16, 1.5f, false, ORANGE, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_3, 16, 1.5f, false, ORANGE, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Bouncer, 16, 1.5f, false, L_TRIANGLE, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Bouncer, 16, 1.5f, false, R_TRIANGLE, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_1, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_2, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_3, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false, FLOOR_1, BALL_1));
 
 }
 
@@ -981,29 +1013,37 @@ void ModuleSceneIntro::CreateSensors()
 		435, 80
 	};
 
+	int Ramp_sensor[8] = {
+		220, 17,
+		232, 17,
+		232, 13,
+		220, 13
+	};
 
-	sensors.add(App->physics->CreatePolygon(0, 0, Left_B_Led, 8, NULL, false, B_L_LED, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Center_B_Led, 8, NULL, false, B_C_LED, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Right_B_Led, 8, NULL, false, B_R_LED, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Right_Diana, 8, NULL, false, DIANA, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Left_Diana, 8, NULL, false, DIANA, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Turbine, 8, NULL, false, TURBINE, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_1, 8, NULL, false, RED_PANEL_1, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_2, 8, NULL, false, RED_PANEL_2, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_3, 8, NULL, false, RED_PANEL_3, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_4, 8, NULL, false, RED_PANEL_4, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Blue_Button, 8, NULL, false, BLUE_BUTTON, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_1, 8, NULL, false, RED_LED_1, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_2, 8, NULL, false, RED_LED_2, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_3, 8, NULL, false, RED_LED_3, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_4, 8, NULL, false, RED_LED_4, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Left_Pass, 8, NULL, false, LEFT_PASS, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Right_Pass, 8, NULL, false, RIGHT_PASS, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Left_Not_Pass, 8, NULL, false, LEFT_PASS, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Right_Not_Pass, 8, NULL, false, RIGHT_PASS, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Entrance, 8, NULL, false, ENTRANCE, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Not_Entrance, 8, NULL, false, NOT_ENTRANCE, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Black_Box, 8, NULL, false, BLACK_BOX, true));
+
+	sensors.add(App->physics->CreatePolygon(0, 0, Left_B_Led, 8, NULL, false, B_L_LED, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Center_B_Led, 8, NULL, false, B_C_LED, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Right_B_Led, 8, NULL, false, B_R_LED, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Right_Diana, 8, NULL, false, DIANA, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Left_Diana, 8, NULL, false, DIANA, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Turbine, 8, NULL, false, TURBINE, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_1, 8, NULL, false, RED_PANEL_1, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_2, 8, NULL, false, RED_PANEL_2, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_3, 8, NULL, false, RED_PANEL_3, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_4, 8, NULL, false, RED_PANEL_4, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Blue_Button, 8, NULL, false, BLUE_BUTTON, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_1, 8, NULL, false, RED_LED_1, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_2, 8, NULL, false, RED_LED_2, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_3, 8, NULL, false, RED_LED_3, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_4, 8, NULL, false, RED_LED_4, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Left_Pass, 8, NULL, false, LEFT_PASS, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Right_Pass, 8, NULL, false, RIGHT_PASS, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Left_Not_Pass, 8, NULL, false, LEFT_PASS, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Right_Not_Pass, 8, NULL, false, RIGHT_PASS, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Entrance, 8, NULL, false, ENTRANCE, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Not_Entrance, 8, NULL, false, NOT_ENTRANCE, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Black_Box, 8, NULL, false, BLACK_BOX, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Ramp_sensor, 8, NULL, false, DIANA, true, FLOOR_2, BALL_2));
 
 }
 
