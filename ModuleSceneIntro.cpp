@@ -11,6 +11,7 @@
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	circle = box = PinballMap = PinballMap_2nd_Layer = NULL;
+	Leds_tex = NULL;
 	ray_on = false;
 	sensed = false;
 }
@@ -30,6 +31,8 @@ bool ModuleSceneIntro::Start()
 	box = App->textures->Load("pinball/crate.png");
 	PinballMap = App->textures->Load("pinball/Map_Pinball.png");
 	PinballMap_2nd_Layer = App->textures->Load("pinball/Map_Pinball_2nd_Layer.png");
+	//Load Leds Textures
+	Leds_tex = App->textures->Load("pinball/Leds/leds.png");
 
 	//Loading Sound Fx
 	left_triangle = App->audio->LoadFx("pinball/Audio/Fx/LeftTriangle.wav");
@@ -41,6 +44,7 @@ bool ModuleSceneIntro::Start()
 	red_panel = App->audio->LoadFx("pinball/Audio/Fx/RedPanel.wav");
 	blue_led_reactivation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
 	all_led_activation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
+
 
 	Lose_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 10, SCREEN_WIDTH / 2, 10, GAME_OVER);
 
@@ -62,6 +66,7 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	int actualtime = GetTickCount();
 
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
@@ -181,6 +186,21 @@ update_status ModuleSceneIntro::Update()
 		Game_Over = false;
 	}
 
+	if (actualtime >= now + 500)
+	{
+		Leds_intermittent = true;
+		if (actualtime >= now + 1000)
+		{
+			now = actualtime;
+			Leds_intermittent = false;
+		}
+	}
+	
+
+	
+	DrawLeds();
+
+
 	return UPDATE_CONTINUE;
 }
 
@@ -299,6 +319,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			save = bodyA;
 			App->player->Extra_Balls++;
 			App->player->ball_saved = true;
+			Leds_Blue_Button += 1;
 		}
 
 	}
@@ -845,3 +866,31 @@ void ModuleSceneIntro::CreateSensors()
 	sensors.add(App->physics->CreatePolygon(0, 0, Black_Box, 8, NULL, false, BLACK_BOX, true));
 
 }
+
+void ModuleSceneIntro::DrawLeds()
+{
+	if (Leds_intermittent == true)
+	{
+		if (Leds_Blue_Button == 0)
+		{
+			SDL_Rect tmp = { 1, 13, 20, 16 };
+			App->renderer->Blit(Leds_tex, 165, 314, &tmp);
+		}
+
+		if (Leds_Blue_Button == 1)
+		{
+			SDL_Rect tmp = { 1, 13, 20, 16 };
+			App->renderer->Blit(Leds_tex, 165, 314, &tmp);
+		}
+	}
+
+	if (Leds_Blue_Button == 1)
+	{
+		SDL_Rect tmp = { 1, 13, 20, 16 };
+		App->renderer->Blit(Leds_tex, 165, 314, &tmp);
+	}
+
+
+}
+
+

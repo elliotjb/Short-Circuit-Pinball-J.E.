@@ -63,6 +63,7 @@ update_status ModulePhysics::PreUpdate()
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, bool is_dyn)
 {
 	b2BodyDef body;
+	body.bullet = true;
 	if (is_dyn)
 		body.type = b2_dynamicBody;
 	else

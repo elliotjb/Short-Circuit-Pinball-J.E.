@@ -19,6 +19,7 @@ public:
 	bool CreateMap();
 	void CreateBouncers();
 	void CreateSensors();
+	void DrawLeds();
 
 public:
 	p2List<PhysBody*> circles;
@@ -66,6 +67,12 @@ public:
 	bool Red_Panel3 = false;
 	bool Red_Panel4 = false;
 
+	//TEXTURES LEDS 
+	SDL_Texture* Leds_tex;
+	bool Leds_intermittent = false;
+	uint Leds_Blue_Button = 0;
+
+	int now = GetTickCount();
 
 };
 
