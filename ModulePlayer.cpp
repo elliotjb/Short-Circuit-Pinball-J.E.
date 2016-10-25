@@ -161,9 +161,9 @@ bool ModulePlayer::CreateLevers()
 		186, 137
 	};
 
-	lever_UP_left = App->physics->CreatePolygon(0, 0, Left_UP_Lever, 16, 0, true, LEVER, false);
-	lever_left = App->physics->CreatePolygon(0, 0, Chain_lever_left, 16, 0, true, LEVER, false);
-	lever_Right = App->physics->CreatePolygon(0, 0, Chain_lever_right, 16, 0, true, LEVER, false);
+	lever_UP_left = App->physics->CreatePolygon(0, 0, Left_UP_Lever, 16, 0.5f, true, LEVER, false);
+	lever_left = App->physics->CreatePolygon(0, 0, Chain_lever_left, 16, 0.5f, true, LEVER, false);
+	lever_Right = App->physics->CreatePolygon(0, 0, Chain_lever_right, 16, 0.5f, true, LEVER, false);
 
 
 	return true;

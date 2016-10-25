@@ -37,7 +37,11 @@ public:
 	PhysBody* Lose_sensor;
 	bool sensed;
 
+	//Bal Drawing
 	SDL_Texture* circle;
+	SDL_Rect ball_rect[7];
+	void DrawBall(const PhysBody* ball);
+
 	SDL_Texture* box;
 	SDL_Texture* PinballMap;
 	SDL_Texture* PinballMap_2nd_Layer;
@@ -50,7 +54,7 @@ public:
 	uint diana;
 	uint turbine;
 	uint red_panel;
-	uint blue_led_reactivation;
+	uint led_reactivation;
 	uint all_led_activation;
 
 	p2Point<int> ray;

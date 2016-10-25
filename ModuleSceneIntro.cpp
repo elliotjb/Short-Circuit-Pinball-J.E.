@@ -14,6 +14,15 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	Leds_tex = NULL;
 	ray_on = false;
 	sensed = false;
+
+	//initialize Ball dimension sprites
+	ball_rect[0] = { 0, 0, 26, 26 };
+	ball_rect[1] = { 26, 0, 26, 26 };
+	ball_rect[2] = { 54, 0, 26, 26 };
+	ball_rect[3] = { 81, 0, 26, 26 };
+	ball_rect[4] = { 108, 0, 26, 26 };
+	ball_rect[5] = { 136, 0, 26, 26 };
+	ball_rect[6] = { 163, 0, 26, 26 };
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -42,8 +51,8 @@ bool ModuleSceneIntro::Start()
 	diana = App->audio->LoadFx("pinball/Audio/Fx/Diana.wav");
 	turbine = App->audio->LoadFx("pinball/Audio/Fx/Turbine.wav");
 	red_panel = App->audio->LoadFx("pinball/Audio/Fx/RedPanel.wav");
-	blue_led_reactivation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
-	all_led_activation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
+	led_reactivation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
+	all_led_activation = App->audio->LoadFx("pinball/Audio/Fx/3LedActivation.wav");
 
 	//Put False all Bools
 	for (int i = 0; i < 4; i++)
@@ -151,9 +160,7 @@ update_status ModuleSceneIntro::Update()
 
 	while (c != NULL)
 	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(circle, x - 4.7f, y - 3.0f, NULL, 1.0f);
+		DrawBall(c->data);
 		c = c->next;
 	}
 
@@ -251,13 +258,20 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			{
 				if (rLed_activated == false)
 				{
-					App->audio->PlayFx(led_activation);
+					if (cLed_activated == true && lLed_activated == true)
+					{
+						App->audio->PlayFx(all_led_activation);
+					}
+					else
+					{
+						App->audio->PlayFx(led_activation);
+					}
 					rLed_activated = true;
 					B_UP_LED[2] = true;
 				}
 				else
 				{
-					App->audio->PlayFx(blue_led_reactivation);
+					App->audio->PlayFx(led_reactivation);
 				}
 			}
 
@@ -265,60 +279,117 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			{
 				if (lLed_activated == false)
 				{
-					App->audio->PlayFx(led_activation);
+					if (cLed_activated == true && rLed_activated == true)
+					{
+						App->audio->PlayFx(all_led_activation);
+					}
+					else
+					{
+						App->audio->PlayFx(led_activation);
+					}
+
 					lLed_activated = true;
 					B_UP_LED[0] = true;
 				}
-				else
+				else 
 				{
-					App->audio->PlayFx(blue_led_reactivation);
+					App->audio->PlayFx(led_reactivation);
 				}
 			}
+
 			if (bodyB->type == B_C_LED)
 			{
 				if (cLed_activated == false)
 				{
-					App->audio->PlayFx(led_activation);
+					if (lLed_activated == true && rLed_activated == true)
+					{
+						App->audio->PlayFx(all_led_activation);
+					}
+					else
+					{
+						App->audio->PlayFx(led_activation);
+					}
 					cLed_activated = true;
 					B_UP_LED[1] = true;
 				}
 				else
 				{
-					App->audio->PlayFx(blue_led_reactivation);
+					App->audio->PlayFx(led_reactivation);
 				}
 			}
+
 			if (cLed_activated && lLed_activated && rLed_activated)
 			{
 				App->player->Score += 250;
 				tree_on_raw = true;
+
 				for (int i = 0; i < 3; i++)
 					B_UP_LED[i] = false;
+
+				cLed_activated = false;
+				lLed_activated = false;
+				rLed_activated = false;
+
 				now_3_row = actualtime_3_row;
 			}
 		}
 
 		if (bodyB->type == RED_LED_1 || bodyB->type == RED_LED_2 || bodyB->type == RED_LED_3 || bodyB->type == RED_LED_4)
 		{
-			if (bodyB->type == RED_LED_1 && Leds_Reds[0] == false)//Left
+			if (bodyB->type == RED_LED_1)//Left
 			{
 				App->player->Score += 50;
-				Leds_Reds[0] = true;
+				if (Leds_Reds[0] == false)
+				{
+					App->audio->PlayFx(led_activation);
+					Leds_Reds[0] = true;
+				}
+				else
+				{
+					App->audio->PlayFx(led_reactivation);
+				}
 			}
-			if (bodyB->type == RED_LED_2 && Leds_Reds[1] == false)//Left
+			if (bodyB->type == RED_LED_2)//Left
 			{
 				App->player->Score += 50;
-				Leds_Reds[1] = true;
+				if (Leds_Reds[1] == false)
+				{
+					App->audio->PlayFx(led_activation);
+					Leds_Reds[1] = true;
+				}
+				else
+				{
+					App->audio->PlayFx(led_reactivation);
+				}
 			}
-			if (bodyB->type == RED_LED_3 && Leds_Reds[2] == false)//right
+			if (bodyB->type == RED_LED_3)//right
 			{
 				App->player->Score += 50;
-				Leds_Reds[2] = true;
+				if (Leds_Reds[2] == false)
+				{
+					App->audio->PlayFx(led_activation);
+					Leds_Reds[2] = true;
+				}
+				else
+				{
+					App->audio->PlayFx(led_reactivation);
+				}
 			}
-			if (bodyB->type == RED_LED_4 && Leds_Reds[3] == false)//right
+			if (bodyB->type == RED_LED_4)//right
 			{
 				App->player->Score += 50;
-				Leds_Reds[3] = true;
+				
+				if (Leds_Reds[3] == false)
+				{
+					App->audio->PlayFx(led_activation);
+					Leds_Reds[3] = true;
+				}
+				else
+				{
+					App->audio->PlayFx(led_reactivation);
+				}
 			}
+
 			if (Leds_Reds[0] && Leds_Reds[1] && Leds_Reds[2] && Leds_Reds[3])
 			{
 				App->player->Score += 1250;
@@ -394,12 +465,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			else
 				Leds_Turbine += 1;
 		}
-
-
 	}
-
-
-
 }
 
 bool ModuleSceneIntro::CreateMap()
@@ -657,18 +723,18 @@ bool ModuleSceneIntro::CreateMap()
 		444, 163
 	};
 
-	ricks.add(App->physics->CreateChain(0, 0, rick_head, 100, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 34, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 18, 0.5f, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 18, 0.5f, false));
-	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 52, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Center_1, 98, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Center_2, 26, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Left, 20, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Right, 20, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Left_Triangle, 10, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Right_Triangle, 10, 0, false));
-	ricks.add(App->physics->CreateChain(0, 0, Part_UP_Right_Second, 26, 0, false));
+	ricks.add(App->physics->CreateChain(0, 0, rick_head, 100, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 34, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 18, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 18, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 52, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Center_1, 98, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Center_2, 26, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Left, 20, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, Part_Right, 20, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, Left_Triangle, 10, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, Right_Triangle, 10, NULL, false));
+	ricks.add(App->physics->CreateChain(0, 0, Part_UP_Right_Second, 26, NULL, false));
 
 	circles.add(App->physics->CreateCircle(620, 600, 8, true));
 
@@ -761,24 +827,24 @@ void ModuleSceneIntro::CreateSensors()
 {
 
 	int Left_B_Led[8] = {
-		299, 53,
+		299, 45,
 		299, 40,
 		303, 40,
-		303, 53
+		303, 45
 	};
 
 	int Center_B_Led[8] = {
-		330, 51,
+		330, 45,
 		330, 40,
 		334, 40,
-		334, 51
+		334, 45
 	};
 
 	int Right_B_Led[8] = {
-		361, 52,
-		361, 41,
-		365, 41,
-		365, 52
+		361, 45,
+		361, 40,
+		365, 40,
+		365, 45
 	};
 
 	int Right_Diana[8] = {
@@ -887,9 +953,9 @@ void ModuleSceneIntro::CreateSensors()
 	};
 
 	int Right_Not_Pass[8] = {
-		367, 18,
-		362, 30,
-		370, 30,
+		368, 18,
+		365, 30,
+		372, 30,
 		373, 18
 	};
 
@@ -1134,6 +1200,44 @@ void ModuleSceneIntro::DrawLeds()
 		}
 	}
 	
+}
+
+void ModuleSceneIntro::DrawBall(const PhysBody * ball)
+{
+	if (ball != nullptr)
+	{
+		int x, y;
+		ball->GetPosition(x, y);
+
+		if (y > 0 && y <= SCREEN_HEIGHT / 7)
+		{
+			App->renderer->Blit(circle, x - 4.7f, y - 3.0f, &ball_rect[6]);
+		}
+		else if (y > SCREEN_HEIGHT / 7 && y <= 2 * SCREEN_HEIGHT / 7)
+		{
+			App->renderer->Blit(circle, x - 4.7f, y - 3.0f, &ball_rect[5]);
+		}
+		else if (y > 2 * SCREEN_HEIGHT / 7 && y <= 3 * SCREEN_HEIGHT / 7)
+		{
+			App->renderer->Blit(circle, x - 4.7f, y - 3.0f, &ball_rect[4]);
+		}
+		else if (y > 3 * SCREEN_HEIGHT / 7 && y <= 4 * SCREEN_HEIGHT / 7)
+		{
+			App->renderer->Blit(circle, x - 4.7f, y - 3.0f, &ball_rect[3]);
+		}
+		else if (y > 4 * SCREEN_HEIGHT / 7 && y <= 5 * SCREEN_HEIGHT / 7)
+		{
+			App->renderer->Blit(circle, x - 4.7f, y - 3.0f, &ball_rect[2]);
+		}
+		else if (y > 5 * SCREEN_HEIGHT / 7 && y <= 6 * SCREEN_HEIGHT / 7)
+		{
+			App->renderer->Blit(circle, x - 4.7f, y - 3.0f, &ball_rect[1]);
+		}
+		else if (y > 6 * SCREEN_HEIGHT / 7 && y <= SCREEN_HEIGHT)
+		{
+			App->renderer->Blit(circle, x - 4.7f, y - 3.0f, &ball_rect[0]);
+		}
+	}
 }
 
 
