@@ -45,6 +45,16 @@ bool ModuleSceneIntro::Start()
 	blue_led_reactivation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
 	all_led_activation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
 
+	//Put False all Bools
+	for (int i = 0; i < 4; i++)
+		Leds_Arrow[i] = false;
+	for (int i = 0; i < 3; i++)
+		B_UP_LED[i] = false;
+	for (int i = 0; i < 4; i++)
+		Leds_Reds[i] = false;
+
+	
+
 
 	Lose_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 10, SCREEN_WIDTH / 2, 10, GAME_OVER);
 
@@ -66,17 +76,13 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	int actualtime = GetTickCount();
+	actualtime = GetTickCount();
+	actualtime_3_row = GetTickCount();
 
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
 		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 7, true));
 	}
-
-	/*if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-	boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
-	}*/
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
@@ -84,12 +90,6 @@ update_status ModuleSceneIntro::Update()
 		{
 			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
 		}
-	}
-
-	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	{
-		// Pivot 0, 0
-
 	}
 
 	// Prepare for raycast ------------------------------------------------------
@@ -101,21 +101,13 @@ update_status ModuleSceneIntro::Update()
 
 	fVector normal(0.0f, 0.0f);
 
+
+
 	// All draw functions ------------------------------------------------------
 	p2List_item<PhysBody*>* c;
 
 
 	App->renderer->Blit(PinballMap, 0, 0, NULL);
-
-	c = circles.getFirst();
-
-	while (c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(circle, x - 4.7f, y - 3.0f, NULL, 1.0f);
-		c = c->next;
-	}
 
 	c = boxes.getFirst();
 
@@ -132,7 +124,38 @@ update_status ModuleSceneIntro::Update()
 		}
 		c = c->next;
 	}
+	//Draw All Leds:
+	if (actualtime >= now + 500)
+	{
+		Leds_intermittent = true;
+		if (actualtime >= now + 1000)
+		{
+			now = actualtime;
+			Leds_intermittent = false;
+		}
+	}
+	if (tree_on_raw)
+	{
+		if (actualtime_3_row >= now_3_row + 2000)
+		{
+			now_3_row = actualtime_3_row;
+			tree_on_raw = false;
+			cLed_activated = false;
+			lLed_activated = false;
+			rLed_activated = false;
+		}
+	}
+	DrawLeds();
 
+	c = circles.getFirst();
+
+	while (c != NULL)
+	{
+		int x, y;
+		c->data->GetPosition(x, y);
+		App->renderer->Blit(circle, x - 4.7f, y - 3.0f, NULL, 1.0f);
+		c = c->next;
+	}
 
 	App->renderer->Blit(PinballMap_2nd_Layer, 0, 0, NULL);
 
@@ -186,19 +209,6 @@ update_status ModuleSceneIntro::Update()
 		Game_Over = false;
 	}
 
-	if (actualtime >= now + 500)
-	{
-		Leds_intermittent = true;
-		if (actualtime >= now + 1000)
-		{
-			now = actualtime;
-			Leds_intermittent = false;
-		}
-	}
-	
-
-	
-	DrawLeds();
 
 
 	return UPDATE_CONTINUE;
@@ -243,6 +253,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				{
 					App->audio->PlayFx(led_activation);
 					rLed_activated = true;
+					B_UP_LED[2] = true;
 				}
 				else
 				{
@@ -256,6 +267,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				{
 					App->audio->PlayFx(led_activation);
 					lLed_activated = true;
+					B_UP_LED[0] = true;
 				}
 				else
 				{
@@ -268,11 +280,50 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				{
 					App->audio->PlayFx(led_activation);
 					cLed_activated = true;
+					B_UP_LED[1] = true;
 				}
 				else
 				{
 					App->audio->PlayFx(blue_led_reactivation);
 				}
+			}
+			if (cLed_activated && lLed_activated && rLed_activated)
+			{
+				App->player->Score += 250;
+				tree_on_raw = true;
+				for (int i = 0; i < 3; i++)
+					B_UP_LED[i] = false;
+				now_3_row = actualtime_3_row;
+			}
+		}
+
+		if (bodyB->type == RED_LED_1 || bodyB->type == RED_LED_2 || bodyB->type == RED_LED_3 || bodyB->type == RED_LED_4)
+		{
+			if (bodyB->type == RED_LED_1 && Leds_Reds[0] == false)//Left
+			{
+				App->player->Score += 50;
+				Leds_Reds[0] = true;
+			}
+			if (bodyB->type == RED_LED_2 && Leds_Reds[1] == false)//Left
+			{
+				App->player->Score += 50;
+				Leds_Reds[1] = true;
+			}
+			if (bodyB->type == RED_LED_3 && Leds_Reds[2] == false)//right
+			{
+				App->player->Score += 50;
+				Leds_Reds[2] = true;
+			}
+			if (bodyB->type == RED_LED_4 && Leds_Reds[3] == false)//right
+			{
+				App->player->Score += 50;
+				Leds_Reds[3] = true;
+			}
+			if (Leds_Reds[0] && Leds_Reds[1] && Leds_Reds[2] && Leds_Reds[3])
+			{
+				App->player->Score += 1250;
+				for (int i = 0; i < 4; i++)
+					Leds_Reds[i] = false;
 			}
 		}
 
@@ -286,6 +337,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			App->audio->PlayFx(turbine);
 			App->player->Score += 1000;
+		
 		}
 
 		if (bodyB->type == RED_PANEL_1 && Red_Panel1 == false)
@@ -293,6 +345,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			Red_Panel1 = true;
 			App->audio->PlayFx(red_panel);
 			App->player->Score += 175;
+			Leds_Arrow[0] = true;
 		}
 
 		if (bodyB->type == RED_PANEL_2 && Red_Panel2 == false)
@@ -300,18 +353,21 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			Red_Panel2 = true;
 			App->audio->PlayFx(red_panel);
 			App->player->Score += 175;
+			Leds_Arrow[1] = true;
 		}
 		if (bodyB->type == RED_PANEL_3 && Red_Panel3 == false)
 		{
 			Red_Panel3 = true;
 			App->audio->PlayFx(red_panel);
 			App->player->Score += 175;
+			Leds_Arrow[2] = true;
 		}
 		if (bodyB->type == RED_PANEL_4 && Red_Panel4 == false)
 		{
 			Red_Panel4 = true;
 			App->audio->PlayFx(red_panel);
 			App->player->Score += 175;
+			Leds_Arrow[3] = true;
 		}
 
 		if (bodyB->type == BLUE_BUTTON)
@@ -319,8 +375,26 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			save = bodyA;
 			App->player->Extra_Balls++;
 			App->player->ball_saved = true;
-			Leds_Blue_Button += 1;
+			App->player->Score += 1000;
+			if (Leds_Blue_Button == 3)
+			{
+				Leds_Blue_Button = 0;
+			}
+			else
+				Leds_Blue_Button += 1;
 		}
+
+		if (bodyB->type == BLACK_BOX)
+		{
+			App->player->Score += 1000;
+			if (Leds_Turbine == 5)
+			{
+				Leds_Turbine = 0;
+			}
+			else
+				Leds_Turbine += 1;
+		}
+
 
 	}
 
@@ -601,7 +675,6 @@ bool ModuleSceneIntro::CreateMap()
 	return true;
 }
 
-
 void ModuleSceneIntro::CreateBouncers()
 {
 	int Left_Bouncer[16] = {
@@ -686,6 +759,7 @@ void ModuleSceneIntro::CreateBouncers()
 
 void ModuleSceneIntro::CreateSensors()
 {
+
 	int Left_B_Led[8] = {
 		299, 53,
 		299, 40,
@@ -854,9 +928,9 @@ void ModuleSceneIntro::CreateSensors()
 	sensors.add(App->physics->CreatePolygon(0, 0, Red_Panel_4, 8, NULL, false, RED_PANEL_4, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Blue_Button, 8, NULL, false, BLUE_BUTTON, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_1, 8, NULL, false, RED_LED_1, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_2, 8, NULL, false, RED_LED_3, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_3, 8, NULL, false, RED_LED_4, true));
-	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_4, 8, NULL, false, RED_LED_2, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_2, 8, NULL, false, RED_LED_2, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_3, 8, NULL, false, RED_LED_3, true));
+	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_4, 8, NULL, false, RED_LED_4, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Left_Pass, 8, NULL, false, LEFT_PASS, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Right_Pass, 8, NULL, false, RIGHT_PASS, true));
 	sensors.add(App->physics->CreatePolygon(0, 0, Left_Not_Pass, 8, NULL, false, LEFT_PASS, true));
@@ -869,8 +943,9 @@ void ModuleSceneIntro::CreateSensors()
 
 void ModuleSceneIntro::DrawLeds()
 {
-	if (Leds_intermittent == true)
+	if (Leds_intermittent)
 	{
+		//Leds_Blue_Button
 		if (Leds_Blue_Button == 0)
 		{
 			SDL_Rect tmp = { 1, 13, 20, 16 };
@@ -880,17 +955,185 @@ void ModuleSceneIntro::DrawLeds()
 		if (Leds_Blue_Button == 1)
 		{
 			SDL_Rect tmp = { 1, 13, 20, 16 };
+			App->renderer->Blit(Leds_tex, 156, 285, &tmp);
+		}
+
+		if (Leds_Blue_Button == 2)
+		{
+			SDL_Rect tmp = { 1, 13, 20, 16 };
+			App->renderer->Blit(Leds_tex, 148, 259, &tmp);
+		}
+
+		//Leds_Arrow
+		if (Leds_Turbine == 0)
+		{
+			SDL_Rect tmp = { 121, 1, 20, 12 };
+			App->renderer->Blit(Leds_tex, 443, 196, &tmp);
+		}
+		if (Leds_Turbine == 1)
+		{
+			SDL_Rect tmp = { 99, 1, 20, 11 };
+			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
+		}
+		if (Leds_Turbine == 2)
+		{
+			SDL_Rect tmp = { 77, 1, 19, 11 };
+			App->renderer->Blit(Leds_tex, 452, 155, &tmp);
+		}
+		if (Leds_Turbine == 3)
+		{
+			SDL_Rect tmp = { 57, 1, 18, 10 };
+			App->renderer->Blit(Leds_tex, 449, 135, &tmp);
+		}
+		if (Leds_Turbine == 4)
+		{
+			SDL_Rect tmp = { 36, 1, 19, 8 };
+			App->renderer->Blit(Leds_tex, 446, 117, &tmp);
+		}
+
+		if (tree_on_raw)
+		{
+			SDL_Rect tmp = { 3, 1, 13, 7 };
+			App->renderer->Blit(Leds_tex, 295, 28, &tmp);
+			App->renderer->Blit(Leds_tex, 325, 28, &tmp);
+			App->renderer->Blit(Leds_tex, 356, 28, &tmp);
+		}
+
+	}
+
+	//LEDS_Permanents
+	if (Leds_Blue_Button > 0)
+	{
+		SDL_Rect tmp = { 1, 13, 20, 16 };
+		if (Leds_Blue_Button == 1)
+		{
 			App->renderer->Blit(Leds_tex, 165, 314, &tmp);
+		}
+
+		if (Leds_Blue_Button == 2)
+		{
+			App->renderer->Blit(Leds_tex, 165, 314, &tmp);
+			App->renderer->Blit(Leds_tex, 156, 285, &tmp);
+		}
+		if (Leds_Blue_Button == 3)
+		{
+			App->renderer->Blit(Leds_tex, 165, 314, &tmp);
+			App->renderer->Blit(Leds_tex, 156, 285, &tmp);
+			App->renderer->Blit(Leds_tex, 148, 259, &tmp);
 		}
 	}
 
-	if (Leds_Blue_Button == 1)
+	if (Leds_Arrow[0] || Leds_Arrow[1] || Leds_Arrow[2] || Leds_Arrow[3])
 	{
-		SDL_Rect tmp = { 1, 13, 20, 16 };
-		App->renderer->Blit(Leds_tex, 165, 314, &tmp);
+		SDL_Rect tmp = { 16, 0, 19, 10 };
+		if (Leds_Arrow[0])
+		{
+			App->renderer->Blit(Leds_tex, 400, 158, &tmp);
+		}
+		if (Leds_Arrow[1])
+		{
+			App->renderer->Blit(Leds_tex, 392, 145, &tmp);
+		}
+		if (Leds_Arrow[2])
+		{
+			App->renderer->Blit(Leds_tex, 384, 132, &tmp);
+		}
+		if (Leds_Arrow[3])
+		{
+			App->renderer->Blit(Leds_tex, 377, 121, &tmp);
+		}
 	}
 
+	if (Leds_Turbine > 0)
+	{
+		if (Leds_Turbine == 1)
+		{
+			SDL_Rect tmp = { 121, 1, 20, 12 };
+			App->renderer->Blit(Leds_tex, 443, 196, &tmp);
+		}
+		if (Leds_Turbine == 2)
+		{
+			SDL_Rect tmp = { 99, 1, 20, 11 };
+			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
+			SDL_Rect tmp_2 = { 121, 1, 20, 12 };
+			App->renderer->Blit(Leds_tex, 443, 196, &tmp_2);
+		}
+		if (Leds_Turbine == 3)
+		{
+			SDL_Rect tmp = { 99, 1, 20, 11 };
+			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
+			SDL_Rect tmp_2 = { 121, 1, 20, 12 };
+			App->renderer->Blit(Leds_tex, 443, 196, &tmp_2);
+			SDL_Rect tmp_3 = { 77, 1, 19, 11 };
+			App->renderer->Blit(Leds_tex, 452, 155, &tmp_3);
+		}
+		if (Leds_Turbine == 4)
+		{
+			SDL_Rect tmp = { 99, 1, 20, 11 };
+			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
+			SDL_Rect tmp_2 = { 121, 1, 20, 12 };
+			App->renderer->Blit(Leds_tex, 443, 196, &tmp_2);
+			SDL_Rect tmp_3 = { 77, 1, 19, 11 };
+			App->renderer->Blit(Leds_tex, 452, 155, &tmp_3);
+			SDL_Rect tmp_4 = { 57, 1, 18, 10 };
+			App->renderer->Blit(Leds_tex, 449, 135, &tmp_4);
+		}
+		if (Leds_Turbine == 5)
+		{
+			SDL_Rect tmp = { 99, 1, 20, 11 };
+			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
+			SDL_Rect tmp_2 = { 121, 1, 20, 12 };
+			App->renderer->Blit(Leds_tex, 443, 196, &tmp_2);
+			SDL_Rect tmp_3 = { 77, 1, 19, 11 };
+			App->renderer->Blit(Leds_tex, 452, 155, &tmp_3);
+			SDL_Rect tmp_4 = { 57, 1, 18, 10 };
+			App->renderer->Blit(Leds_tex, 449, 135, &tmp_4);
+			SDL_Rect tmp_5 = { 36, 1, 19, 8 };
+			App->renderer->Blit(Leds_tex, 446, 117, &tmp_5);
+		}
+	}
 
+	if (B_UP_LED[0] || B_UP_LED[1] || B_UP_LED[2])
+	{
+		SDL_Rect tmp = { 3, 1, 13, 7 };
+		if (B_UP_LED[0])
+		{
+			App->renderer->Blit(Leds_tex, 295, 28, &tmp);
+		}
+		if (B_UP_LED[1])
+		{
+			App->renderer->Blit(Leds_tex, 325, 28, &tmp);
+		}
+		if (B_UP_LED[2])
+		{
+			App->renderer->Blit(Leds_tex, 356, 28, &tmp);
+		}
+	}
+
+	if (Leds_Reds[0] || Leds_Reds[1] || Leds_Reds[2] || Leds_Reds[3])
+	{
+		if (Leds_Reds[0])//Left
+		{
+			SDL_Rect tmp = { 29, 14, 23, 19 };
+			App->renderer->Blit(Leds_tex, 84, 425, &tmp);
+		}
+		if (Leds_Reds[1])//Left
+		{
+			SDL_Rect tmp = { 29, 14, 23, 19 };
+			App->renderer->Blit(Leds_tex, 131, 399, &tmp);
+		}
+		if (Leds_Reds[2])//right
+		{
+			SDL_Rect tmp = { 55, 14, 23, 19 };
+			App->renderer->Blit(Leds_tex, 471, 399, &tmp);
+		}
+		if (Leds_Reds[3])//right
+		{
+			SDL_Rect tmp = { 55, 14, 23, 19 };
+			App->renderer->Blit(Leds_tex, 516, 425, &tmp);
+		}
+	}
+	
 }
 
 

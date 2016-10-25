@@ -56,6 +56,7 @@ public:
 	p2Point<int> ray;
 
 	bool ray_on;
+	bool tree_on_raw = false;
 
 	bool Game_Over = false;
 	bool rLed_activated = false;
@@ -69,10 +70,23 @@ public:
 
 	//TEXTURES LEDS 
 	SDL_Texture* Leds_tex;
-	bool Leds_intermittent = false;
-	uint Leds_Blue_Button = 0;
-
 	int now = GetTickCount();
+	int now_3_row = GetTickCount();
+	int actualtime_3_row;
+	int actualtime;
+	bool Leds_intermittent = false;
+	//Led Blue Botton
+	uint Leds_Blue_Button = 0;
+	//Led Arrows
+	bool Leds_Arrow[4];
+	//Led Turbine
+	uint Leds_Turbine = 0;
+	//Led Arrows
+	bool B_UP_LED[3];
+	//Led Arrows
+	bool Leds_Reds[4];
+
+
 
 };
 
