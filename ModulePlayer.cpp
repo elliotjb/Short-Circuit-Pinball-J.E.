@@ -36,6 +36,8 @@ bool ModulePlayer::Start()
 	App->physics->CreateRevolutionJoint();
 
 	//Create Joints
+	//Joint_lever_left = App->physics->CreateRevolutionJoint_test(Joint_lever_left, lever_left, pivot_left, false, 205, 575, 0, 0, true, 0, 40);
+	//Joint_force_left = App->physics->CreateRevolutionJoint_test(Joint_lever_left, lever_left, pivot_left, false, 205, 575, 0, 0, false, 0, 0);
 
 
 	return true;
