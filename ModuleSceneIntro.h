@@ -3,6 +3,7 @@
 #include "p2List.h"
 #include "p2Point.h"
 #include "Globals.h"
+#include "Box2D/Box2D/Box2D.h"
 
 class PhysBody;
 
@@ -30,16 +31,18 @@ public:
 	p2List<PhysBody*> bouncers;
 	p2List<PhysBody*> sensors;
 
-	//Pointers to balls
+	//Pointers to balls-----------
 	PhysBody* lose_ball = nullptr;
 	PhysBody* save = nullptr;
 	PhysBody* miniball = nullptr;
+	PhysBody* Sup_Button = nullptr;
+	PhysBody* Ball_in_start = nullptr;
 
-	//Sensors
+	//Sensors----------------------
 	PhysBody* Lose_sensor;
 	bool sensed;
 
-	//Bal Drawing
+	//Bal Drawing------------------
 	SDL_Texture* circle;
 	SDL_Rect ball_rect[7];
 	void DrawBall(const PhysBody* ball);
@@ -48,7 +51,7 @@ public:
 	SDL_Texture* PinballMap;
 	SDL_Texture* PinballMap_2nd_Layer;
 
-	//Audio Fx
+	//Audio Fx---------------------
 	uint orange_button;
 	uint right_triangle;
 	uint left_triangle;
@@ -64,7 +67,7 @@ public:
 	bool ray_on;
 	bool tree_on_raw = false;
 
-	//BOOLS
+	//BOOLS------------------------
 	bool Game_Over = false;
 	bool rLed_activated = false;
 	bool lLed_activated = false;
@@ -84,14 +87,17 @@ public:
 	bool activate_blackbox = false;
 	bool deactivate_blackbox = false;
 
-	//TEXTURES OF LEDS 
-	SDL_Texture* Leds_tex;
+	//TIME----------------------------
 	int now = GetTickCount();
 	int now_3_row = GetTickCount();
 	int Lives_save_now = GetTickCount();
 	int actualtime_3_row;
 	int actualtime;
 	int Live_actualtime_save;
+	int Blue_Button = GetTickCount();
+
+	//TEXTURES LEDS--------------------
+	SDL_Texture* Leds_tex;
 	bool Leds_intermittent = false;
 	//Led Blue Botton
 	uint Leds_Blue_Button = 0;
@@ -105,6 +111,13 @@ public:
 	bool Leds_Reds[4];
 	//Led Save Ball
 	bool Save_Ball = false;
+
+	//Joint in blue button-------------------
+	b2RevoluteJoint* Joint_Blue_button = NULL;
+	bool isEnter = false;
+
+	//Apply Froce---------------------------
+	bool CanApplyForce = false;
 
 
 

@@ -62,7 +62,8 @@ bool ModuleSceneIntro::Start()
 	for (int i = 0; i < 4; i++)
 		Leds_Reds[i] = false;
 
-	
+	//Sensor of Start
+	Sup_Button = App->physics->CreateCircle(137, 222, 2, false, FLOOR_1, FLOOR_1);
 	Lose_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 10, SCREEN_WIDTH / 2, 10, GAME_OVER);
 
 	CreateMap();
@@ -87,18 +88,32 @@ update_status ModuleSceneIntro::Update()
 	actualtime_3_row = GetTickCount();
 	Live_actualtime_save = GetTickCount();
 
-	/*if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	/*if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) //IF GOD_MODE ACTIVATED -> TODO
 	{
 		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 7, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
 	}*/
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
-		if (circles.getFirst() != NULL)
+		p2List_item<PhysBody*>* tmp = circles.getFirst();
+
+		while (tmp != NULL)
 		{
-			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
-			Save_Ball = true;
-			Lives_save_now = Live_actualtime_save;
+			b2Transform transform = sensors.getLast()->data->body->GetTransform();
+			b2Fixture* f = sensors.getLast()->data->body->GetFixtureList();
+			b2Shape* shape = f->GetShape();
+			if (shape->TestPoint(transform, tmp->data->body->GetPosition()))
+			{
+				if (tmp->data == Ball_in_start)
+				{
+					tmp->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+					Save_Ball = true;
+					Ball_in_start = nullptr;
+					CanApplyForce = false;
+					Lives_save_now = Live_actualtime_save;
+				}
+			}
+			tmp = tmp->next;
 		}
 	}
 
@@ -195,12 +210,24 @@ update_status ModuleSceneIntro::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
-	if (App->player->ball_saved == true)
+	if (App->player->ball_saved)
 	{
-		save->body->GetWorld()->DestroyBody(save->body);
-		circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
-		save = nullptr;
+		Joint_Blue_button = App->physics->CreateJoint(Joint_Blue_button, save, Sup_Button, false, 10, 10, 0, 0, false, 0, 0);
+		Blue_Button = actualtime;
+		//save->body->GetWorld()->DestroyBody(save->body);
+		circles.add(App->physics->CreateCircle(619, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
+		isEnter = true;
 		App->player->ball_saved = false;
+	}
+
+	if (isEnter)
+	{
+		if (actualtime >= Blue_Button + 40000)//40s stay in Button
+		{
+			App->physics->Destroy_Joint_button();
+			isEnter = false;
+			save = nullptr;
+		}
 	}
 
 	c = circles.getFirst();
@@ -217,29 +244,26 @@ update_status ModuleSceneIntro::Update()
 	//Check GAME STATE
 	if (Game_Over == true)
 	{
+		App->physics->Destroy_Joint_Mouse();
+		circles.del(circles.findNode(lose_ball));
 		lose_ball->body->GetWorld()->DestroyBody(lose_ball->body);
 		lose_ball = nullptr;
-		
-		if (App->player->Extra_Balls > 0)
-		{
-			App->player->Extra_Balls--;
-			circles.add(App->physics->CreateCircle(150, 250, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
-			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(15, 30), true);
-		}
 
-		else if (App->player->Lives > 1)
+		if (App->player->Lives > 1)
 		{
 			if (Save_Ball)
 			{
 				circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
-				circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+				circles.getLast()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
 			}
 			else
 			{
-				circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
-				App->player->Lives--;
-				Lives_save_now = Live_actualtime_save;
-				Save_Ball = false;
+				if (circles.count() == 1)
+				{
+					circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
+					App->player->Lives--;
+					Lives_save_now = Live_actualtime_save;
+				}
 			}
 		}
 		else
@@ -250,7 +274,6 @@ update_status ModuleSceneIntro::Update()
 
 		Game_Over = false;
 	}
-
 
 
 	return UPDATE_CONTINUE;
@@ -266,6 +289,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		if (bodyB->type == GAME_OVER)
 		{
+			App->physics->IsDestroyed = true;
 			lose_ball = bodyA;
 			Game_Over = true;
 		}
@@ -471,7 +495,6 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyB->type == BLUE_BUTTON)
 		{
 			save = bodyA;
-			App->player->Extra_Balls++;
 			App->player->ball_saved = true;
 			App->player->Score += 1000;
 			if (Leds_Blue_Button == 3)
@@ -493,6 +516,12 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				Leds_Turbine += 1;
 		}
 
+		if (bodyB->type == START)
+		{
+			Ball_in_start = bodyA;
+			CanApplyForce = true;
+		}
+		
 		if (bodyB->type == ENTRANCE)
 		{
 			if (deactivate_entrance == false)
@@ -1135,6 +1164,13 @@ void ModuleSceneIntro::CreateSensors()
 		384, 67
 	};
 
+	int Senser_ApplyForce[8] = {
+		597, 600,
+		638, 600,
+		652, 659,
+		612, 663
+	};
+
 
 	sensors.add(App->physics->CreatePolygon(0, 0, Left_B_Led, 8, NULL, false, B_L_LED, true, FLOOR_1, BALL_1));
 	sensors.add(App->physics->CreatePolygon(0, 0, Center_B_Led, 8, NULL, false, B_C_LED, true, FLOOR_1, BALL_1));
@@ -1160,6 +1196,8 @@ void ModuleSceneIntro::CreateSensors()
 	sensors.add(App->physics->CreatePolygon(0, 0, Black_Box, 8, NULL, false, BLACK_BOX, true, FLOOR_1, BALL_1));
 	sensors.add(App->physics->CreatePolygon(0, 0, Ramp_sensor, 8, NULL, false, DIANA, true, FLOOR_2, BALL_2));
 	sensors.add(App->physics->CreatePolygon(0, 0, Box_Exit_Sensor, 8, NULL, false, BOX_EXIT_SENSOR, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Senser_ApplyForce, 8, NULL, false, START, true, FLOOR_1, BALL_1));
+
 
 }
 

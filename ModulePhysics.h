@@ -15,7 +15,7 @@
 enum type {	GREEN_LED, RED_LED_1, RED_LED_2, RED_LED_3, RED_LED_4, B_R_LED, B_C_LED, B_L_LED,
 			L_TRIANGLE, R_TRIANGLE, ORANGE, DIANA, GAME_OVER, LEVER, TURBINE, RED_PANEL_1, RED_PANEL_2,
 			RED_PANEL_3, RED_PANEL_4, BLUE_BUTTON, LEFT_PASS, LEFT_NOT_PASS, RIGHT_PASS, RIGHT_NOT_PASS,
-			ENTRANCE, NOT_ENTRANCE, BLACK_BOX, ENTRANCE_DOOR, LEFT_DOOR, RIGHT_DOOR, NO_EFFECT, BOX_EXIT, BOX_EXIT_SENSOR };
+			ENTRANCE, NOT_ENTRANCE, BLACK_BOX, ENTRANCE_DOOR, LEFT_DOOR, RIGHT_DOOR, START, NO_EFFECT, BOX_EXIT, BOX_EXIT_SENSOR };
 
 enum _entityCategory{
 	FLOOR_1 = 0x0001,
@@ -61,12 +61,17 @@ public:
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height, type type);
 	PhysBody* CreateChain(int x, int y, int* points, int size, float res, bool isdyn, uint16 categoryBits, uint16 maskBits);
 	
-	void CreateRevolutionJoint();
-	b2RevoluteJoint* CreateRevolutionJoint_test(b2RevoluteJoint* joint, PhysBody* bodyA, PhysBody* bodyB, bool CollideCon, int posA_x, int posA_y, int posB_x, int posB_y, bool limit, int lowe_angle, int upper_angle);
-	
+	b2RevoluteJoint* CreateJoint(b2RevoluteJoint* joint, PhysBody* bodyA, PhysBody* bodyB, bool CollideCon, int posA_x, int posA_y, int posB_x, int posB_y, bool limit, int lowe_angle, int upper_angle);
+
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
+	//Destroy joint button
+	void Destroy_Joint_button();
 
+	void Destroy_Joint_Mouse();
+
+	//Special Bool
+	bool IsDestroyed = false;
 private:
 
 	bool debug;
