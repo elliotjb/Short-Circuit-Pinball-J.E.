@@ -17,9 +17,11 @@ public:
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 	bool CreateMap();
-	void CreateBouncers();
+	void CreateElements();
 	void CreateSensors();
 	void DrawLeds();
+
+	void Activate_Deactivate_Doors();
 
 public:
 	p2List<PhysBody*> circles;
@@ -62,6 +64,7 @@ public:
 	bool ray_on;
 	bool tree_on_raw = false;
 
+	//BOOLS
 	bool Game_Over = false;
 	bool rLed_activated = false;
 	bool lLed_activated = false;
@@ -72,7 +75,16 @@ public:
 	bool Red_Panel3 = false;
 	bool Red_Panel4 = false;
 
-	//TEXTURES LEDS 
+	bool deactivate_entrance = false;
+	bool activate_entrance = false;
+	bool activate_left = false;
+	bool deactivate_left = false;
+	bool activate_right = false;
+	bool deactivate_right = false;
+	bool activate_blackbox = false;
+	bool deactivate_blackbox = false;
+
+	//TEXTURES OF LEDS 
 	SDL_Texture* Leds_tex;
 	int now = GetTickCount();
 	int now_3_row = GetTickCount();

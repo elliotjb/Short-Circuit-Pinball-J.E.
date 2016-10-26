@@ -63,12 +63,10 @@ bool ModuleSceneIntro::Start()
 		Leds_Reds[i] = false;
 
 	
-
-
 	Lose_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 10, SCREEN_WIDTH / 2, 10, GAME_OVER);
 
 	CreateMap();
-	CreateBouncers();
+	CreateElements();
 	CreateSensors();
 
 	return ret;
@@ -89,10 +87,10 @@ update_status ModuleSceneIntro::Update()
 	actualtime_3_row = GetTickCount();
 	Live_actualtime_save = GetTickCount();
 
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	/*if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
 		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 7, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
-	}
+	}*/
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
@@ -119,6 +117,9 @@ update_status ModuleSceneIntro::Update()
 		Save_Ball = false;
 	}
 
+	//Check activated doors
+	Activate_Deactivate_Doors();
+
 
 	// All draw functions ------------------------------------------------------
 	p2List_item<PhysBody*>* c;
@@ -141,6 +142,7 @@ update_status ModuleSceneIntro::Update()
 		}
 		c = c->next;
 	}
+
 	//Draw All Leds:
 	if (actualtime >= now + 500)
 	{
@@ -162,6 +164,7 @@ update_status ModuleSceneIntro::Update()
 			rLed_activated = false;
 		}
 	}
+
 	DrawLeds();
 
 
@@ -489,6 +492,70 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			else
 				Leds_Turbine += 1;
 		}
+
+		if (bodyB->type == ENTRANCE)
+		{
+			if (deactivate_entrance == false)
+			{
+				deactivate_entrance = true;
+			}
+		}
+
+		if (bodyB->type == NOT_ENTRANCE)
+		{
+			if (activate_entrance == false)
+			{
+				activate_entrance = true;
+			}
+		}
+
+		if (bodyB->type == LEFT_PASS)
+		{
+			if (deactivate_left == false)
+			{
+				deactivate_left = true;
+			}
+		}
+
+		if (bodyB->type == LEFT_NOT_PASS)
+		{
+			if (activate_left == false)
+			{
+				activate_left = true;
+			}
+		}
+
+		if (bodyB->type == RIGHT_PASS)
+		{
+			if (deactivate_right == false)
+			{
+				deactivate_right = true;
+			}
+		}
+
+		if (bodyB->type == RIGHT_NOT_PASS)
+		{
+			if (activate_right == false)
+			{
+				activate_right = true;
+			}
+		}
+
+		if (bodyB->type == BLACK_BOX)
+		{
+			if (deactivate_blackbox == false)
+			{
+				deactivate_blackbox = true;
+			}
+		}
+
+		if (bodyB->type == BOX_EXIT_SENSOR)
+		{
+			if (activate_blackbox == false)
+			{
+				activate_blackbox = true;
+			}
+		}
 	}
 }
 
@@ -762,6 +829,7 @@ bool ModuleSceneIntro::CreateMap()
 		203, 120
 	};
 
+
 	ricks.add(App->physics->CreateChain(0, 0, rick_head, 100, NULL, false, FLOOR_1, BALL_1));
 	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 34, NULL, false, FLOOR_1, BALL_1));
 	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 18, NULL, false, FLOOR_1, BALL_1));
@@ -783,7 +851,7 @@ bool ModuleSceneIntro::CreateMap()
 	return true;
 }
 
-void ModuleSceneIntro::CreateBouncers()
+void ModuleSceneIntro::CreateElements()
 {
 	int Left_Bouncer[16] = {
 		201, 501,
@@ -854,6 +922,33 @@ void ModuleSceneIntro::CreateBouncers()
 		498, 249
 	};
 
+	int entrance_door[8] = {
+		515, 239,
+		535, 222,
+		537, 229,
+		517, 247
+	};
+
+	int left_door[8] = {
+		278, 16,
+		282, 31,
+		288, 31,
+		284, 16,
+	};
+
+	int right_door[8] = {
+		379, 16,
+		377, 31,
+		383, 31,
+		385, 16
+	};
+
+	int box_exit[8] = {
+		397, 67,
+		396, 50,
+		403, 50,
+		404, 67
+	};
 
 	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Bouncer, 16, 1.5f, false, L_TRIANGLE, false, FLOOR_1, BALL_1));
 	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Bouncer, 16, 1.5f, false, R_TRIANGLE, false, FLOOR_1, BALL_1));
@@ -862,7 +957,10 @@ void ModuleSceneIntro::CreateBouncers()
 	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_3, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
 	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false, FLOOR_1, BALL_1));
 	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false, FLOOR_1, BALL_1));
-
+	bouncers.add(App->physics->CreatePolygon(0, 0, entrance_door, 8, NULL, false, ENTRANCE_DOOR, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreatePolygon(0, 0, left_door, 8, NULL, false, LEFT_DOOR, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreatePolygon(0, 0, right_door, 8, NULL, false, RIGHT_DOOR, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreatePolygon(0, 0, box_exit, 8, NULL, false, BOX_EXIT, false, FLOOR_1, BALL_1));
 }
 
 void ModuleSceneIntro::CreateSensors()
@@ -974,38 +1072,38 @@ void ModuleSceneIntro::CreateSensors()
 	};
 
 	int Left_Pass[8] = {
-		278, 18,
-		280, 30,
-		274, 30,
-		272, 18,
+		263, 18,
+		265, 30,
+		259, 30,
+		257, 18,
 	};
 
 	int Right_Pass[8] = {
-		387, 18,
-		384, 30,
-		390, 30,
-		393, 18
+		402, 18,
+		399, 30,
+		405, 30,
+		408, 18
 	};
 
 	int Left_Not_Pass[8] = {
-		298, 18,
-		300, 30,
-		294, 30,
-		292, 18,
+		308, 18,
+		310, 30,
+		304, 30,
+		302, 18,
 	};
 
 	int Right_Not_Pass[8] = {
-		368, 18,
-		365, 30,
-		372, 30,
-		373, 18
+		358, 18,
+		355, 30,
+		362, 30,
+		363, 18
 	};
 
 	int Entrance[8] = {
-		519, 260,
-		521, 267,
-		540, 251,
-		538, 245,
+		599, 560,
+		601, 567,
+		620, 551,
+		618, 545,
 		
 	};
 
@@ -1030,6 +1128,13 @@ void ModuleSceneIntro::CreateSensors()
 		220, 13
 	};
 
+	int Box_Exit_Sensor[8] = {
+		377, 67,
+		376, 50,
+		383, 50,
+		384, 67
+	};
+
 
 	sensors.add(App->physics->CreatePolygon(0, 0, Left_B_Led, 8, NULL, false, B_L_LED, true, FLOOR_1, BALL_1));
 	sensors.add(App->physics->CreatePolygon(0, 0, Center_B_Led, 8, NULL, false, B_C_LED, true, FLOOR_1, BALL_1));
@@ -1048,12 +1153,13 @@ void ModuleSceneIntro::CreateSensors()
 	sensors.add(App->physics->CreatePolygon(0, 0, Red_Led_4, 8, NULL, false, RED_LED_4, true, FLOOR_1, BALL_1));
 	sensors.add(App->physics->CreatePolygon(0, 0, Left_Pass, 8, NULL, false, LEFT_PASS, true, FLOOR_1, BALL_1));
 	sensors.add(App->physics->CreatePolygon(0, 0, Right_Pass, 8, NULL, false, RIGHT_PASS, true, FLOOR_1, BALL_1));
-	sensors.add(App->physics->CreatePolygon(0, 0, Left_Not_Pass, 8, NULL, false, LEFT_PASS, true, FLOOR_1, BALL_1));
-	sensors.add(App->physics->CreatePolygon(0, 0, Right_Not_Pass, 8, NULL, false, RIGHT_PASS, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Left_Not_Pass, 8, NULL, false, LEFT_NOT_PASS, true, FLOOR_1, BALL_1));
+	sensors.add(App->physics->CreatePolygon(0, 0, Right_Not_Pass, 8, NULL, false, RIGHT_NOT_PASS, true, FLOOR_1, BALL_1));
 	sensors.add(App->physics->CreatePolygon(0, 0, Entrance, 8, NULL, false, ENTRANCE, true, FLOOR_1, BALL_1));
 	sensors.add(App->physics->CreatePolygon(0, 0, Not_Entrance, 8, NULL, false, NOT_ENTRANCE, true, FLOOR_1, BALL_1));
 	sensors.add(App->physics->CreatePolygon(0, 0, Black_Box, 8, NULL, false, BLACK_BOX, true, FLOOR_1, BALL_1));
 	sensors.add(App->physics->CreatePolygon(0, 0, Ramp_sensor, 8, NULL, false, DIANA, true, FLOOR_2, BALL_2));
+	sensors.add(App->physics->CreatePolygon(0, 0, Box_Exit_Sensor, 8, NULL, false, BOX_EXIT_SENSOR, true, FLOOR_1, BALL_1));
 
 }
 
@@ -1256,6 +1362,143 @@ void ModuleSceneIntro::DrawLeds()
 		App->renderer->Blit(Leds_tex, 292, 549, &tmp);
 	}
 	
+}
+
+//Unidirectional doors mechanism
+void ModuleSceneIntro::Activate_Deactivate_Doors()
+{
+	//ENTRANCE DOOR
+	if (deactivate_entrance == true)
+	{
+		p2List_item<PhysBody*>* c;
+		c = bouncers.getFirst();
+		while (c != NULL)
+		{
+			if (c->data->type == ENTRANCE_DOOR)
+			{
+				c->data->body->SetActive(false);
+				deactivate_entrance = false;
+				break;
+			}
+			c = c->next;
+		}
+	}
+
+	if (activate_entrance == true)
+	{
+		p2List_item<PhysBody*>* c;
+		c = bouncers.getFirst();
+		while (c != NULL)
+		{
+			if (c->data->type == ENTRANCE_DOOR)
+			{
+				c->data->body->SetActive(true);
+				activate_entrance = false;
+				break;
+			}
+			c = c->next;
+		}
+	}
+
+	//LEFT DOOR
+	if (deactivate_left == true)
+	{
+		p2List_item<PhysBody*>* c;
+		c = bouncers.getFirst();
+		while (c != NULL)
+		{
+			if (c->data->type == LEFT_DOOR)
+			{
+				c->data->body->SetActive(false);
+				deactivate_left = false;
+				break;
+			}
+			c = c->next;
+		}
+	}
+
+	if (activate_left == true)
+	{
+		p2List_item<PhysBody*>* c;
+		c = bouncers.getFirst();
+		while (c != NULL)
+		{
+			if (c->data->type == LEFT_DOOR)
+			{
+				c->data->body->SetActive(true);
+				activate_left = false;
+				break;
+			}
+			c = c->next;
+		}
+	}
+
+	//RIGHT DOOR
+	if (deactivate_right == true)
+	{
+		p2List_item<PhysBody*>* c;
+		c = bouncers.getFirst();
+		while (c != NULL)
+		{
+			if (c->data->type == RIGHT_DOOR)
+			{
+				c->data->body->SetActive(false);
+				deactivate_right = false;
+				break;
+			}
+			c = c->next;
+		}
+	}
+
+	if (activate_right == true)
+	{
+		p2List_item<PhysBody*>* c;
+		c = bouncers.getFirst();
+		while (c != NULL)
+		{
+			if (c->data->type == RIGHT_DOOR)
+			{
+				c->data->body->SetActive(true);
+				activate_right = false;
+				break;
+			}
+			c = c->next;
+		}
+	}
+
+	//BLACK_BOX
+	if (deactivate_blackbox == true)
+	{
+		p2List_item<PhysBody*>* c;
+		c = bouncers.getFirst();
+		while (c != NULL)
+		{
+			if (c->data->type == BOX_EXIT)
+			{
+				c->data->body->SetActive(false);
+				deactivate_blackbox = false;
+				break;
+			}
+			c = c->next;
+		}
+	}
+
+	if (activate_blackbox == true)
+	{
+		p2List_item<PhysBody*>* c;
+		c = bouncers.getFirst();
+		while (c != NULL)
+		{
+			if (c->data->type == BOX_EXIT)
+			{
+				c->data->body->SetActive(true);
+				activate_blackbox = false;
+				break;
+			}
+			c = c->next;
+		}
+	}
+
 }
 
 void ModuleSceneIntro::DrawBall(const PhysBody * ball)
