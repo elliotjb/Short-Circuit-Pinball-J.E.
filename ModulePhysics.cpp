@@ -243,6 +243,26 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, float 
 	return pbody;
 }
 
+
+b2RevoluteJoint* ModulePhysics::CreateRevolutionJoint_test(b2RevoluteJoint* joint, PhysBody* bodyA, PhysBody* bodyB, bool CollideCon, int posA_x, int posA_y, int posB_x, int posB_y, bool limit, int lowe_angle, int upper_angle)
+{
+	b2RevoluteJointDef revoluteJointDef;
+	revoluteJointDef.bodyA = bodyA->body;
+	revoluteJointDef.bodyB = bodyB->body;
+	revoluteJointDef.collideConnected = CollideCon;
+	revoluteJointDef.localAnchorA.Set(PIXEL_TO_METERS(posA_x), PIXEL_TO_METERS(posA_y));//the top right corner of the box
+	revoluteJointDef.localAnchorB.Set(PIXEL_TO_METERS(posB_x), PIXEL_TO_METERS(posB_y));//center of the circle
+	if (limit)
+	{
+		revoluteJointDef.enableLimit = limit;
+		revoluteJointDef.lowerAngle = lowe_angle * DEGTORAD;
+		revoluteJointDef.upperAngle = upper_angle * DEGTORAD;
+	}
+	joint = (b2RevoluteJoint*)world->CreateJoint(&revoluteJointDef);
+
+	return joint;
+}
+
 void ModulePhysics::CreateRevolutionJoint()
 {
 	//Lever Left
@@ -272,7 +292,6 @@ void ModulePhysics::CreateRevolutionJoint()
 	revoluteJointDef_right.collideConnected = false;
 	revoluteJointDef_right.localAnchorA.Set(PIXEL_TO_METERS(410), PIXEL_TO_METERS(575));//the top right corner of the box
 	revoluteJointDef_right.localAnchorB.Set(0, 0);//center of the circle
-												  //revoluteJointDef_left.referenceAngle = 0;
 	revoluteJointDef_right.enableLimit = true;
 	revoluteJointDef_right.lowerAngle = -40 * DEGTORAD;
 	revoluteJointDef_right.upperAngle = 0 * DEGTORAD;

@@ -63,6 +63,7 @@ public:
 	PhysBody* CreateChain(int x, int y, int* points, int size, float res, bool isdyn, uint16 categoryBits, uint16 maskBits);
 	
 	void CreateRevolutionJoint();
+	b2RevoluteJoint* CreateRevolutionJoint_test(b2RevoluteJoint* joint, PhysBody* bodyA, PhysBody* bodyB, bool CollideCon, int posA_x, int posA_y, int posB_x, int posB_y, bool limit, int lowe_angle, int upper_angle);
 	
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
