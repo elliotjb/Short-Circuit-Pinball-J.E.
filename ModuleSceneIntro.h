@@ -61,6 +61,9 @@ public:
 	uint red_panel;
 	uint led_reactivation;
 	uint all_led_activation;
+	uint saved_ball;
+	uint start;
+	uint blue_button;
 
 	p2Point<int> ray;
 

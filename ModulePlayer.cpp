@@ -107,7 +107,14 @@ update_status ModulePlayer::Update()
 	//Draw Imatge of lever UP
 	App->renderer->Blit(lever_UP_Tex, 182, 132, NULL, 1.0f, lever_UP_left->GetRotation(), 8, 9);
 
-	sprintf_s(title, "Score: %06d - Lives: %02d - Last Score: %06d", Score, Lives, Last_score);
+	if (App->scene_intro->isEnter)
+	{
+		sprintf_s(title, "Score: %06d - Lives: %02d - Last Score: %06d   EXTRA BALL IN: %i s", Score, Lives, Last_score,40 - (App->scene_intro->actualtime - App->scene_intro->Blue_Button)/1000);
+	}
+	else
+	{
+		sprintf_s(title, "Score: %06d - Lives: %02d - Last Score: %06d", Score, Lives, Last_score);
+	}
 	App->window->SetTitle(title);
 
 	return UPDATE_CONTINUE;

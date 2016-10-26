@@ -53,6 +53,9 @@ bool ModuleSceneIntro::Start()
 	red_panel = App->audio->LoadFx("pinball/Audio/Fx/RedPanel.wav");
 	led_reactivation = App->audio->LoadFx("pinball/Audio/Fx/LedReactivation.wav");
 	all_led_activation = App->audio->LoadFx("pinball/Audio/Fx/3LedActivation.wav");
+	blue_button = App->audio->LoadFx("pinball/Audio/Fx/BlueButton.wav");
+	start = App->audio->LoadFx("pinball/Audio/Fx/Start.wav");
+	saved_ball = App->audio->LoadFx("pinball/Audio/Fx/SavedBall.wav");
 
 	//Put False all Bools
 	for (int i = 0; i < 4; i++)
@@ -106,6 +109,7 @@ update_status ModuleSceneIntro::Update()
 			{
 				if (tmp->data == Ball_in_start)
 				{
+					App->audio->PlayFx(start);
 					tmp->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
 					Save_Ball = true;
 					Ball_in_start = nullptr;
@@ -224,7 +228,9 @@ update_status ModuleSceneIntro::Update()
 	{
 		if (actualtime >= Blue_Button + 40000)//40s stay in Button
 		{
+			App->audio->PlayFx(blue_button);
 			App->physics->Destroy_Joint_button();
+			save->body->ApplyForceToCenter(b2Vec2(10.0f, 50.0f), true);
 			isEnter = false;
 			save = nullptr;
 		}
@@ -253,7 +259,9 @@ update_status ModuleSceneIntro::Update()
 		{
 			if (Save_Ball)
 			{
+				App->audio->PlayFx(saved_ball);
 				circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
+				App->audio->PlayFx(start);
 				circles.getLast()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
 			}
 			else

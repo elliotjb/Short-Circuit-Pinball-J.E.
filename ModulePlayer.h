@@ -55,7 +55,7 @@ public:
 	bool active_right = false;
 
 	//
-	char title[50];
+	char title[100];
 
 	//Joints of the Levers
 	b2RevoluteJoint* Joint_lever_left = NULL;
