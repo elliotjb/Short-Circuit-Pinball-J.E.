@@ -87,6 +87,7 @@ update_status ModuleSceneIntro::Update()
 {
 	actualtime = GetTickCount();
 	actualtime_3_row = GetTickCount();
+	Live_actualtime_save = GetTickCount();
 
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
@@ -98,6 +99,8 @@ update_status ModuleSceneIntro::Update()
 		if (circles.getFirst() != NULL)
 		{
 			circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+			Save_Ball = true;
+			Lives_save_now = Live_actualtime_save;
 		}
 	}
 
@@ -110,6 +113,11 @@ update_status ModuleSceneIntro::Update()
 
 	fVector normal(0.0f, 0.0f);
 
+	//Time of save ball
+	if (Live_actualtime_save >= Lives_save_now + 20000 && Save_Ball)
+	{
+		Save_Ball = false;
+	}
 
 
 	// All draw functions ------------------------------------------------------
@@ -218,8 +226,18 @@ update_status ModuleSceneIntro::Update()
 
 		else if (App->player->Lives > 1)
 		{
-			circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
-			App->player->Lives--;
+			if (Save_Ball)
+			{
+				circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
+				circles.getFirst()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+			}
+			else
+			{
+				circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
+				App->player->Lives--;
+				Lives_save_now = Live_actualtime_save;
+				Save_Ball = false;
+			}
 		}
 		else
 		{
@@ -332,18 +350,12 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				}
 			}
 
-			if (cLed_activated && lLed_activated && rLed_activated)
+			if (B_UP_LED[0] && B_UP_LED[1] && B_UP_LED[2])
 			{
 				App->player->Score += 250;
 				tree_on_raw = true;
-
 				for (int i = 0; i < 3; i++)
 					B_UP_LED[i] = false;
-
-				cLed_activated = false;
-				lLed_activated = false;
-				rLed_activated = false;
-
 				now_3_row = actualtime_3_row;
 			}
 		}
@@ -407,8 +419,6 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			if (Leds_Reds[0] && Leds_Reds[1] && Leds_Reds[2] && Leds_Reds[3])
 			{
 				App->player->Score += 1250;
-				for (int i = 0; i < 4; i++)
-					Leds_Reds[i] = false;
 			}
 		}
 
@@ -1238,6 +1248,12 @@ void ModuleSceneIntro::DrawLeds()
 			SDL_Rect tmp = { 55, 14, 23, 19 };
 			App->renderer->Blit(Leds_tex, 516, 425, &tmp);
 		}
+	}
+
+	if (Save_Ball)
+	{
+		SDL_Rect tmp = { 110, 15, 30, 29 };
+		App->renderer->Blit(Leds_tex, 292, 549, &tmp);
 	}
 	
 }

@@ -76,8 +76,10 @@ public:
 	SDL_Texture* Leds_tex;
 	int now = GetTickCount();
 	int now_3_row = GetTickCount();
+	int Lives_save_now = GetTickCount();
 	int actualtime_3_row;
 	int actualtime;
+	int Live_actualtime_save;
 	bool Leds_intermittent = false;
 	//Led Blue Botton
 	uint Leds_Blue_Button = 0;
@@ -89,6 +91,8 @@ public:
 	bool B_UP_LED[3];
 	//Led Arrows
 	bool Leds_Reds[4];
+	//Led Save Ball
+	bool Save_Ball = false;
 
 
 
