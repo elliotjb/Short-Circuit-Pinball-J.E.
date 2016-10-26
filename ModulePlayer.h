@@ -58,7 +58,10 @@ public:
 	char title[50];
 
 	//Joints of the Levers
-	b2RevoluteJoint* Joint_lever_left;
-	b2RevoluteJoint* Joint_force_left;
-
+	b2RevoluteJoint* Joint_lever_left = NULL;
+	b2RevoluteJoint* Joint_force_left = NULL;
+	b2RevoluteJoint* Joint_lever_right = NULL;
+	b2RevoluteJoint* Joint_force_right = NULL;
+	b2RevoluteJoint* Joint_lever_UP = NULL;
+	b2RevoluteJoint* Joint_force_UP = NULL;
 };

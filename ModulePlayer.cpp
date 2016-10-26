@@ -33,12 +33,13 @@ bool ModulePlayer::Start()
 	lever_fx = App->audio->LoadFx("pinball/Audio/Fx/Flipers.wav");
 	lever_UP_Tex = App->textures->Load("pinball/UpLever.png");
 
-	App->physics->CreateRevolutionJoint();
-
 	//Create Joints
-	//Joint_lever_left = App->physics->CreateRevolutionJoint_test(Joint_lever_left, lever_left, pivot_left, false, 205, 575, 0, 0, true, 0, 40);
-	//Joint_force_left = App->physics->CreateRevolutionJoint_test(Joint_lever_left, lever_left, pivot_left, false, 205, 575, 0, 0, false, 0, 0);
-
+	Joint_lever_left = App->physics->CreateJoint(Joint_lever_left, lever_left, pivot_left, false, 205, 575, 0, 0, true, 0, 40);
+	Joint_force_left = App->physics->CreateJoint(Joint_force_left, lever_left, pivot_force_left, false, 270, 599, 0, 0, false, 0, 0);
+	Joint_lever_right = App->physics->CreateJoint(Joint_lever_right, lever_Right, pivot_Right, false, 410, 575, 0, 0, true, -40, 0);
+	Joint_force_right = App->physics->CreateJoint(Joint_force_right, lever_Right, pivot_force_Right, false, 340, 599, 0, 0, false, 0, 0);
+	Joint_lever_UP = App->physics->CreateJoint(Joint_lever_UP, lever_UP_left, pivot_UP_left, false, 187, 144, 0, 0, true, 0, 62);
+	Joint_force_UP = App->physics->CreateJoint(Joint_force_UP, lever_UP_left, pivot_UP_force_left, false, 187, 170, 0, 0, false, 0, 0);
 
 	return true;
 }
@@ -180,6 +181,6 @@ void ModulePlayer::Restart_game()
 		Lives = 3;
 		Last_score = Score;
 		Score = 0;
-		App->scene_intro->circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, FLOOR_1 | BALL_1));
+		App->scene_intro->circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, FLOOR_1 | BALL_1 | BALL_2));
 	}
 }
