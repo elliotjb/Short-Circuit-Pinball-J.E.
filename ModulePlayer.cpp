@@ -183,7 +183,7 @@ bool ModulePlayer::CreateLevers()
 
 void ModulePlayer::Restart_game()
 {
-	if (App->scene_intro->Game_Over == true)
+	if (App->scene_intro->Check_Game_Over == true)
 	{
 		Lives = 5;
 		Last_score = Score;
@@ -200,7 +200,7 @@ void ModulePlayer::Restart_game()
 	App->scene_intro->Leds_Turbine = 0;
 	App->scene_intro->Leds_Blue_Button = 0;
 
-	App->scene_intro->Game_Over = false;
+	App->scene_intro->Check_Game_Over = false;
 
 	App->scene_intro->rLed_activated = false;
 	App->scene_intro->lLed_activated = false;

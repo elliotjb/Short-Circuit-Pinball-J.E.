@@ -22,7 +22,9 @@ public:
 	void CreateElements();
 	void CreateSensors();
 	void DrawLeds();
+	void DrawPanels();
 	void CreateBall();
+	void LaunchBall(PhysBody* ball);
 
 	void Activate_Deactivate_Doors();
 
@@ -66,6 +68,8 @@ public:
 	uint saved_ball;
 	uint start;
 	uint blue_button;
+	uint ball_positioning;
+	uint launch;
 
 	p2Point<int> ray;
 
@@ -73,7 +77,7 @@ public:
 
 
 	//BOOLS------------------------
-	bool Game_Over = false;
+	bool Check_Game_Over = false;
 	bool rLed_activated = false;
 	bool lLed_activated = false;
 	bool cLed_activated = false;
@@ -130,6 +134,8 @@ public:
 	SDL_Rect red_leds[4];
 	SDL_Rect save_ball;
 	SDL_Rect Extra_ball;
+	SDL_Rect ball_panel[5];
+	SDL_Rect red_panel_rect;
 
 	//Joint in blue button-------------------
 	b2RevoluteJoint* Joint_Blue_button = NULL;
@@ -141,7 +147,7 @@ public:
 	bool CanCreate_ball = false;
 
 	//Texture of center
-	uint Number_of_Ball = 1;
+	uint Number_of_Ball;
 
 };
 

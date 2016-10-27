@@ -44,6 +44,18 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	save_ball = { 110, 15, 30, 29 };
 
 	Extra_ball = { 83,14,25,22 };
+
+	save_ball = { 110, 15, 30, 29 };
+
+	ball_panel[0] = { 3, 45, 88, 24 };
+	ball_panel[1] = { 3, 71, 88, 24 };
+	ball_panel[2] = { 3, 95, 88, 24 };
+	ball_panel[3] = { 3, 119, 88, 24 };
+	ball_panel[4] = { 3, 145, 88, 24 };
+
+	red_panel_rect = { 131, 45, 15, 26 };
+
+	Number_of_Ball = 1;
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -64,7 +76,7 @@ bool ModuleSceneIntro::Start()
 	PinballMap = App->textures->Load("pinball/Map_Pinball.png");
 	PinballMap_2nd_Layer = App->textures->Load("pinball/Map_Pinball_2nd_Layer.png");
 	//Load Leds Textures
-	Leds_tex = App->textures->Load("pinball/Leds/leds.png");
+	Leds_tex = App->textures->Load("pinball/SpriteSheet.png");
 
 	//Loading Sound Fx
 	left_triangle = App->audio->LoadFx("pinball/Audio/Fx/LeftTriangle.wav");
@@ -79,6 +91,8 @@ bool ModuleSceneIntro::Start()
 	blue_button = App->audio->LoadFx("pinball/Audio/Fx/BlueButton.wav");
 	start = App->audio->LoadFx("pinball/Audio/Fx/Start.wav");
 	saved_ball = App->audio->LoadFx("pinball/Audio/Fx/SavedBall.wav");
+	launch = App->audio->LoadFx("pinball/Audio/Fx/Start.wav");
+	ball_positioning = App->audio->LoadFx("pinball/Audio/Fx/BallPositioning.wav");
 
 
 	//Put False all Bools
@@ -134,8 +148,7 @@ update_status ModuleSceneIntro::Update()
 			{
 				if (tmp->data == Ball_in_start && Save_Ball == false)
 				{
-					App->audio->PlayFx(start);
-					tmp->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+					LaunchBall(tmp->data);
 					Save_Ball = true;
 					Ball_in_start = nullptr;
 					CanApplyForce = false;
@@ -235,6 +248,7 @@ update_status ModuleSceneIntro::Update()
 	}
 
 	DrawLeds();
+	DrawPanels();
 
 
 	//Drawing balls of 1st floor
@@ -280,7 +294,7 @@ update_status ModuleSceneIntro::Update()
 		if (actualtime >= time_extra_ball + 800 && can_crate_new_ball == true)
 		{
 			CreateBall();
-			circles.getLast()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+			LaunchBall(circles.getLast()->data);
 			can_crate_new_ball = false;
 		}
 
@@ -306,7 +320,7 @@ update_status ModuleSceneIntro::Update()
 
 
 	//Check GAME STATE
-	if (Game_Over == true)
+	if (Check_Game_Over == true)
 	{
 		App->physics->Destroy_Joint_Mouse();
 		circles.del(circles.findNode(lose_ball));
@@ -331,11 +345,14 @@ update_status ModuleSceneIntro::Update()
 						App->player->Restart_game();
 					}
 					else
+					{
 						CreateBall();
+						Number_of_Ball++;
+					}
 				}
 			}
 		}
-		Game_Over = false;
+		Check_Game_Over = false;
 	}
 
 	if (ifSave_force)
@@ -347,8 +364,7 @@ update_status ModuleSceneIntro::Update()
 		}
 		if (actualtime >= time_new_ball + 1250)
 		{
-			App->audio->PlayFx(start);
-			circles.getLast()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+			LaunchBall(circles.getLast()->data);
 			ifSave_force = false;
 		}
 	}
@@ -370,7 +386,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			App->physics->IsDestroyed = true;
 			lose_ball = bodyA;
-			Game_Over = true;
+			Check_Game_Over = true;
 			if (Save_Ball)
 			{
 				time_new_ball = actualtime;
@@ -967,8 +983,7 @@ bool ModuleSceneIntro::CreateMap()
 	ricks.add(App->physics->CreateChain(0, 0, Part_UP_Right_Second, 26, NULL, false, FLOOR_1, BALL_1));
 	ricks.add(App->physics->CreateChain(0, 0, Ramp, 24, NULL, false, FLOOR_2, BALL_2));
 
-
-	circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
+	CreateBall();
 	circles.add(App->physics->CreateCircle(210, 103, 8, true, BALL_2, BALL_1 | FLOOR_2));
 
 	return true;
@@ -1084,6 +1099,8 @@ void ModuleSceneIntro::CreateElements()
 	bouncers.add(App->physics->CreatePolygon(0, 0, left_door, 8, NULL, false, LEFT_DOOR, false, FLOOR_1, BALL_1));
 	bouncers.add(App->physics->CreatePolygon(0, 0, right_door, 8, NULL, false, RIGHT_DOOR, false, FLOOR_1, BALL_1));
 	bouncers.add(App->physics->CreatePolygon(0, 0, box_exit, 8, NULL, false, BOX_EXIT, false, FLOOR_1, BALL_1));
+	bouncers.add(App->physics->CreateCircle(SCREEN_WIDTH / 2 - 36, SCREEN_HEIGHT - 5, 7, false, FLOOR_1, BALL_1));
+
 }
 
 void ModuleSceneIntro::CreateSensors()
@@ -1484,9 +1501,34 @@ void ModuleSceneIntro::DrawLeds()
 
 }
 
-/*void ModuleSceneIntro::DrawPanels()
+void ModuleSceneIntro::DrawPanels()
 {
-}*/
+	if (Number_of_Ball == 1)
+	{
+		App->renderer->Blit(Leds_tex, 275, 325, &ball_panel[0]);
+	}
+	else if (Number_of_Ball == 2)
+	{
+		App->renderer->Blit(Leds_tex, 275, 327, &ball_panel[1]);
+	}
+	else if (Number_of_Ball == 3)
+	{
+		App->renderer->Blit(Leds_tex, 275, 327, &ball_panel[2]);
+	}
+	else if (Number_of_Ball == 4)
+	{
+		App->renderer->Blit(Leds_tex, 275, 327, &ball_panel[3]);
+	}
+	else if (Number_of_Ball == 5)
+	{
+		App->renderer->Blit(Leds_tex, 275, 327, &ball_panel[4]);
+	}
+
+	App->renderer->Blit(Leds_tex, 393, 105, &red_panel_rect);
+	App->renderer->Blit(Leds_tex, 401, 117, &red_panel_rect);
+	App->renderer->Blit(Leds_tex, 409, 129, &red_panel_rect);
+	App->renderer->Blit(Leds_tex, 418, 142, &red_panel_rect);
+}
 
 
 void ModuleSceneIntro::CreateBall()
@@ -1495,6 +1537,13 @@ void ModuleSceneIntro::CreateBall()
 	int w = rand() % 5;
 	circles.add(App->physics->CreateCircle(623 + w, 640 + h, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
 }
+
+void ModuleSceneIntro::LaunchBall(PhysBody* ball)
+{
+	App->audio->PlayFx(launch);
+	ball->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+}
+
 
 //Unidirectional doors mechanism
 void ModuleSceneIntro::Activate_Deactivate_Doors()
