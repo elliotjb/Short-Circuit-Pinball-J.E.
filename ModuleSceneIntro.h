@@ -40,6 +40,7 @@ public:
 	PhysBody* miniball = nullptr;
 	PhysBody* Sup_Button = nullptr;
 	PhysBody* Ball_in_start = nullptr;
+	PhysBody* Extra_B = nullptr;
 
 	//Sensors----------------------
 	PhysBody* Lose_sensor;
@@ -73,7 +74,7 @@ public:
 	p2Point<int> ray;
 
 	bool ray_on;
-
+	bool ModeGOD = false;
 
 	//BOOLS------------------------
 	bool Check_Game_Over = false;
@@ -96,13 +97,13 @@ public:
 	int now_4_arrows = GetTickCount();
 	int now_All_Reds = GetTickCount();
 	int Lives_save_now = GetTickCount();
-	int actualtime_3_row;
 	int actualtime;
 	int Live_actualtime_save;
 	int Blue_Button = GetTickCount();
 	int time_extra_ball = GetTickCount();
 	int time_new_ball = GetTickCount();
 	bool can_crate_new_ball = false;
+	bool Now_force_new = false;
 
 	//ELEMENTS(LEDS, PANELS...) TEXTURES--------------------
 	SDL_Texture* Texture;
@@ -136,6 +137,8 @@ public:
 	SDL_Rect ball_panel[5];
 	SDL_Rect red_panel_rect;
 	SDL_Rect ramp_cover;
+	SDL_Rect Game_over_rect;
+
 
 	//Joint in blue button-------------------
 	b2RevoluteJoint* Joint_Blue_button = NULL;
@@ -148,6 +151,12 @@ public:
 
 	//Texture of center
 	uint Number_of_Ball;
+
+	//Restart Game
+	bool Restart = false;
+
+	//Extra Ball
+	bool Draw_extra = false;
 
 };
 

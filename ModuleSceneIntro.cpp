@@ -55,7 +55,7 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	red_panel_rect = { 131, 45, 15, 26 };
 
 	ramp_cover = { 92, 44, 39, 127 };
-
+	Game_over_rect = { 3, 171, 134, 27 };
 	Number_of_Ball = 1;
 }
 
@@ -134,9 +134,12 @@ bool ModuleSceneIntro::CleanUp()
 update_status ModuleSceneIntro::Update()
 {
 	actualtime = GetTickCount();
-	actualtime_3_row = GetTickCount();
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN && ModeGOD)
+	{
+		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 7, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
+	}
+	if (App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_UP)
 	{
 		p2List_item<PhysBody*>* tmp = circles.getFirst();
 
@@ -153,7 +156,7 @@ update_status ModuleSceneIntro::Update()
 					Save_Ball = true;
 					Ball_in_start = nullptr;
 					CanApplyForce = false;
-					Lives_save_now = actualtime;//TODO: NOMES POSAR UN ACTUALTIME
+					Lives_save_now = actualtime;
 				}
 			}
 			tmp = tmp->next;
@@ -208,7 +211,7 @@ update_status ModuleSceneIntro::Update()
 	}
 	if (tree_on_raw)
 	{
-		if (actualtime_3_row >= now_3_row + 2000)
+		if (actualtime >= now_3_row + 2000)
 		{
 			tree_on_raw = false;
 			cLed_activated = false;
@@ -218,7 +221,7 @@ update_status ModuleSceneIntro::Update()
 	}
 	if (arrows_actived)
 	{
-		if (actualtime_3_row >= now_4_arrows + 2000)
+		if (actualtime >= now_4_arrows + 2000)
 		{
 			arrows_actived = false;
 			for (int i = 0; i < 4; i++)
@@ -233,6 +236,14 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
+	if (Restart)
+	{
+		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
+		{
+			Restart = false;
+			App->player->Restart_game();
+		}
+	}
 	//Drawing Functions
 	DrawLeds();
 	DrawPanels();
@@ -283,15 +294,22 @@ update_status ModuleSceneIntro::Update()
 		if (actualtime >= time_extra_ball + 800 && can_crate_new_ball == true)
 		{
 			CreateBall();
-			LaunchBall(circles.getLast()->data);
+			Extra_B = circles.getLast()->data;
+			Draw_extra = true;
 			can_crate_new_ball = false;
+			Now_force_new = true;
+		}
+		if (actualtime >= time_extra_ball + 1250 && Now_force_new)
+		{
+			Now_force_new = false;
+			LaunchBall(circles.getLast()->data);
 		}
 
 		if (actualtime >= Blue_Button + 40000 || circles.count() == 2 && actualtime >= Blue_Button + 2000)//40s stay in Button
 		{
 			App->audio->PlayFx(blue_button);
 			App->physics->Destroy_Joint_button();
-			save->body->ApplyForceToCenter(b2Vec2(10.0f, 20.0f), true); //-> TODO
+			save->body->ApplyForceToCenter(b2Vec2(10.0f, 20.0f), true);
 			isEnter = false;
 			save = nullptr;
 		}
@@ -315,6 +333,11 @@ update_status ModuleSceneIntro::Update()
 	if (Check_Game_Over == true)
 	{
 		App->physics->Destroy_Joint_Mouse();
+		if (Extra_B == lose_ball)
+		{
+			Draw_extra = false;
+			Extra_B = nullptr;
+		}
 		circles.del(circles.findNode(lose_ball));
 		lose_ball->body->GetWorld()->DestroyBody(lose_ball->body);
 		lose_ball = nullptr;
@@ -335,7 +358,9 @@ update_status ModuleSceneIntro::Update()
 					App->player->Lives--;
 					if (App->player->Lives == 0)
 					{
-						App->player->Restart_game();
+						App->player->Restart = true;
+						Number_of_Ball = 0;
+						Restart = true;
 					}
 					else
 					{
@@ -387,7 +412,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyB->type == ORANGE)
 		{
 			App->audio->PlayFx(orange_button);
-			App->player->Score += 10;
+			App->player->Score += 10 * App->player->Multiplier;
 		}
 
 		if (bodyB->type == R_TRIANGLE)
@@ -402,7 +427,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if (bodyB->type == B_R_LED || bodyB->type == B_L_LED || bodyB->type == B_C_LED)
 		{
-			App->player->Score += 20;
+			App->player->Score += 20 * App->player->Multiplier;
 			if (bodyB->type == B_R_LED)
 			{
 				if (rLed_activated == false)
@@ -469,11 +494,11 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 			if (B_UP_LED[0] && B_UP_LED[1] && B_UP_LED[2])
 			{
-				App->player->Score += 250;
+				App->player->Score += 250 * App->player->Multiplier;
 				tree_on_raw = true;
 				for (int i = 0; i < 3; i++)
 					B_UP_LED[i] = false;
-				now_3_row = actualtime_3_row;
+				now_3_row = actualtime;
 			}
 		}
 
@@ -491,7 +516,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					{
 						App->audio->PlayFx(led_activation);
 					}
-					App->player->Score += 50;
+					App->player->Score += 50 * App->player->Multiplier;
 					Leds_Reds[0] = true;
 				}
 				else
@@ -511,7 +536,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					{
 						App->audio->PlayFx(led_activation);
 					}
-					App->player->Score += 50;
+					App->player->Score += 50 * App->player->Multiplier;
 					Leds_Reds[1] = true;
 				}
 				else
@@ -531,7 +556,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					{
 						App->audio->PlayFx(led_activation);
 					}
-					App->player->Score += 50;
+					App->player->Score += 50 * App->player->Multiplier;
 					Leds_Reds[2] = true;
 				}
 				else
@@ -551,7 +576,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					{
 						App->audio->PlayFx(led_activation);
 					}
-					App->player->Score += 50;
+					App->player->Score += 50 * App->player->Multiplier;
 					Leds_Reds[3] = true;
 				}
 				else
@@ -562,7 +587,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 			if (Leds_Reds[0] && Leds_Reds[1] && Leds_Reds[2] && Leds_Reds[3])
 			{
-				App->player->Score += 1250;
+				App->player->Score += 1250 * App->player->Multiplier;
 				all_reds = true;
 				now_All_Reds = actualtime;
 				for (int i = 0; i < 4; i++)
@@ -573,13 +598,13 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (bodyB->type == DIANA)
 		{
 			App->audio->PlayFx(diana);
-			App->player->Score += 175;
+			App->player->Score += 175 * App->player->Multiplier;
 		}
 
 		if (bodyB->type == TURBINE)
 		{
 			App->audio->PlayFx(turbine);
-			App->player->Score += 1000;
+			App->player->Score += 1000 * App->player->Multiplier;
 		
 		}
 
@@ -587,7 +612,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			Arrow_Panel[0] = true;
 			App->audio->PlayFx(red_panel);
-			App->player->Score += 175;
+			App->player->Score += 175 * App->player->Multiplier;
 			Leds_Arrow[0] = true;
 		}
 
@@ -595,28 +620,28 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			Arrow_Panel[1] = true;
 			App->audio->PlayFx(red_panel);
-			App->player->Score += 175;
+			App->player->Score += 175 * App->player->Multiplier;
 			Leds_Arrow[1] = true;
 		}
 		if (bodyB->type == RED_PANEL_3 && Arrow_Panel[2] == false)
 		{
 			Arrow_Panel[2] = true;
 			App->audio->PlayFx(red_panel);
-			App->player->Score += 175;
+			App->player->Score += 175 * App->player->Multiplier;
 			Leds_Arrow[2] = true;
 		}
 		if (bodyB->type == RED_PANEL_4 && Arrow_Panel[3] == false)
 		{
 			Arrow_Panel[3] = true;
 			App->audio->PlayFx(red_panel);
-			App->player->Score += 175;
+			App->player->Score += 175 * App->player->Multiplier;
 			Leds_Arrow[3] = true;
 		}
 		if (Leds_Arrow[0] && Leds_Arrow[1] && Leds_Arrow[2] && Leds_Arrow[3])
 		{
 			now_4_arrows = actualtime;
 			arrows_actived = true;
-			App->player->Score += 500;
+			App->player->Score += 500 * App->player->Multiplier;
 			for (int i = 0; i < 4; i++)
 				Leds_Arrow[i] = false;
 		}
@@ -625,7 +650,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			save = bodyA;
 			App->player->ball_saved = true;
-			App->player->Score += 1000;
+			App->player->Score += 1000 * App->player->Multiplier;
 			if (Leds_Blue_Button == 3)
 			{
 				Leds_Blue_Button = 0;
@@ -636,7 +661,8 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if (bodyB->type == BLACK_BOX)
 		{
-			App->player->Score += 1000;
+			App->player->Multiplier += 1;
+			App->player->Score += 1000 * App->player->Multiplier;
 			if (Leds_Turbine == 5)
 			{
 				Leds_Turbine = 0;
@@ -1519,11 +1545,19 @@ void ModuleSceneIntro::DrawLeds()
 	{
 		App->renderer->Blit(Texture, 292, 549, &save_ball);
 	}
-
+	if (Draw_extra)
+	{
+		App->renderer->Blit(Texture, 298, 500, &Extra_ball);
+	}
 }
 
 void ModuleSceneIntro::DrawPanels()
 {
+	if (Restart)
+	{
+		App->renderer->Blit(Texture, 250, 327, &Game_over_rect);
+	}
+
 	if (Number_of_Ball == 1)
 	{
 		App->renderer->Blit(Texture, 275, 325, &ball_panel[0]);
