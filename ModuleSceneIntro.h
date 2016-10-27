@@ -30,9 +30,8 @@ public:
 
 public:
 	p2List<PhysBody*> circles;
-	p2List<PhysBody*> boxes;
-	p2List<PhysBody*> ricks;
-	p2List<PhysBody*> bouncers;
+	p2List<PhysBody*> pinball;
+	p2List<PhysBody*> solids;
 	p2List<PhysBody*> sensors;
 
 	//Pointers to balls-----------
@@ -46,12 +45,12 @@ public:
 	PhysBody* Lose_sensor;
 	bool sensed;
 
-	//Bal Drawing------------------
+	//Ball Texture------------------
 	SDL_Texture* circle;
 	SDL_Rect ball_rect[7];
 	void DrawBall(const PhysBody* ball);
 
-	SDL_Texture* box;
+	//Map Textures
 	SDL_Texture* PinballMap;
 	SDL_Texture* PinballMap_2nd_Layer;
 
@@ -105,8 +104,8 @@ public:
 	int time_new_ball = GetTickCount();
 	bool can_crate_new_ball = false;
 
-	//TEXTURES LEDS--------------------
-	SDL_Texture* Leds_tex;
+	//ELEMENTS(LEDS, PANELS...) TEXTURES--------------------
+	SDL_Texture* Texture;
 	bool Leds_intermittent = false;
 	//Led Blue Botton
 	uint Leds_Blue_Button = 0;
@@ -124,7 +123,7 @@ public:
 	bool all_reds = false;
 	//Led Save Ball
 	bool Save_Ball = false;
-	bool last_secons = false;
+	bool last_seconds = false;
 
 	//SPRITES RECTS
 	SDL_Rect blue_button_led;
@@ -136,6 +135,7 @@ public:
 	SDL_Rect Extra_ball;
 	SDL_Rect ball_panel[5];
 	SDL_Rect red_panel_rect;
+	SDL_Rect ramp_cover;
 
 	//Joint in blue button-------------------
 	b2RevoluteJoint* Joint_Blue_button = NULL;

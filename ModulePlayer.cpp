@@ -48,7 +48,10 @@ bool ModulePlayer::Start()
 bool ModulePlayer::CleanUp()
 {
 	LOG("Unloading player");
-
+    App->textures->Unload(lever_left_Tex);
+	App->textures->Unload(lever_right_Tex);
+	App->textures->Unload(lever_UP_Tex);
+	
 	return true;
 }
 

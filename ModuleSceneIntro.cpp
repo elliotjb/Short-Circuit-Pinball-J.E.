@@ -10,8 +10,7 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	circle = box = PinballMap = PinballMap_2nd_Layer = NULL;
-	Leds_tex = NULL;
+	circle = PinballMap = PinballMap_2nd_Layer = Texture = NULL;
 	ray_on = false;
 	sensed = false;
 	srand(time(NULL));
@@ -55,6 +54,8 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 
 	red_panel_rect = { 131, 45, 15, 26 };
 
+	ramp_cover = { 92, 44, 39, 127 };
+
 	Number_of_Ball = 1;
 }
 
@@ -72,11 +73,11 @@ bool ModuleSceneIntro::Start()
 	App->audio->PlayMusic("pinball/Audio/Music/Music.ogg", 0.0f);
 
 	circle = App->textures->Load("pinball/Ball.png");
-	box = App->textures->Load("pinball/crate.png");
 	PinballMap = App->textures->Load("pinball/Map_Pinball.png");
 	PinballMap_2nd_Layer = App->textures->Load("pinball/Map_Pinball_2nd_Layer.png");
+	
 	//Load Leds Textures
-	Leds_tex = App->textures->Load("pinball/SpriteSheet.png");
+	Texture = App->textures->Load("pinball/SpriteSheet.png");
 
 	//Loading Sound Fx
 	left_triangle = App->audio->LoadFx("pinball/Audio/Fx/LeftTriangle.wav");
@@ -105,7 +106,7 @@ bool ModuleSceneIntro::Start()
 	for (int i = 0; i < 4; i++)
 		Arrow_Panel[i] = false;
 
-	//Sensor of Start
+	//Sensors of Start and Game Over
 	Sup_Button = App->physics->CreateCircle(142, 232, 2, false, FLOOR_1, FLOOR_1);
 	Lose_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 10, SCREEN_WIDTH / 2, 10, GAME_OVER);
 
@@ -120,6 +121,11 @@ bool ModuleSceneIntro::Start()
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
+	App->textures->Unload(circle);
+	App->textures->Unload(PinballMap);
+	App->textures->Unload(PinballMap_2nd_Layer);
+	App->textures->Unload(Texture);
+	App->textures->Unload(circle);
 
 	return true;
 }
@@ -129,11 +135,6 @@ update_status ModuleSceneIntro::Update()
 {
 	actualtime = GetTickCount();
 	actualtime_3_row = GetTickCount();
-
-	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) //IF GOD_MODE ACTIVATED -> TODO
-	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 7, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
-	}
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
@@ -173,13 +174,13 @@ update_status ModuleSceneIntro::Update()
 	{
 		if (actualtime >= Lives_save_now + 15000)
 		{
-			last_secons = true;
+			last_seconds = true;
 		}
 
 		if (actualtime >= Lives_save_now + 20000 && Save_Ball)
 		{
 			Save_Ball = false;
-			last_secons = false;
+			last_seconds = false;
 		}
 	}
 
@@ -194,21 +195,6 @@ update_status ModuleSceneIntro::Update()
 
 	App->renderer->Blit(PinballMap, 0, 0, NULL);
 
-	c = boxes.getFirst();
-
-	while (c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(box, x - 10, y - 5, NULL, 1.0f, c->data->GetRotation());
-		if (ray_on)
-		{
-			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
-			if (hit >= 0)
-				ray_hit = hit;
-		}
-		c = c->next;
-	}
 
 	//Draw All Leds:
 	if (actualtime >= now + 500)
@@ -247,6 +233,7 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
+	//Drawing Functions
 	DrawLeds();
 	DrawPanels();
 
@@ -278,6 +265,7 @@ update_status ModuleSceneIntro::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
+	//Saving ball into the Blue Button
 	if (App->player->ball_saved)
 	{
 		Joint_Blue_button = App->physics->CreateJoint(Joint_Blue_button, save, Sup_Button, false, 0, 0, 0, 0, false, 0, 0);
@@ -289,6 +277,7 @@ update_status ModuleSceneIntro::Update()
 		can_crate_new_ball = true;
 	}
 
+	//Creating new ball if one is introduced into the Blue Button
 	if (isEnter)
 	{
 		if (actualtime >= time_extra_ball + 800 && can_crate_new_ball == true)
@@ -308,6 +297,7 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
+	//Drawing the Ball of the ramp 
 	c = circles.getFirst();
 	while (c != NULL)
 	{
@@ -318,6 +308,8 @@ update_status ModuleSceneIntro::Update()
 		c = c->next;
 	}
 
+	//Drawing ramp cover
+	App->renderer->Blit(Texture, 201, 3, &ramp_cover);
 
 	//Check GAME STATE
 	if (Check_Game_Over == true)
@@ -329,6 +321,7 @@ update_status ModuleSceneIntro::Update()
 
 		if (App->player->Lives >= 1)
 		{
+			//If save timer is still active
 			if (Save_Ball)
 			{
 				App->audio->PlayFx(saved_ball);
@@ -355,6 +348,7 @@ update_status ModuleSceneIntro::Update()
 		Check_Game_Over = false;
 	}
 
+	//Create new ball after losing one ball
 	if (ifSave_force)
 	{
 		if (actualtime >= time_new_ball + 1000 && CanCreate_ball)
@@ -369,8 +363,6 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
-
-
 	return UPDATE_CONTINUE;
 }
 
@@ -378,8 +370,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
 
-	//App->audio->PlayFx(bonus_fx);
-
+	//CHECKING ALL INTERACTIONS
 	if (bodyA != nullptr)
 	{
 		if (bodyB->type == GAME_OVER)
@@ -488,12 +479,19 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if (bodyB->type == RED_LED_1 || bodyB->type == RED_LED_2 || bodyB->type == RED_LED_3 || bodyB->type == RED_LED_4)
 		{
-			if (bodyB->type == RED_LED_1 && all_reds == false)//Left
+			if (bodyB->type == RED_LED_1 && all_reds == false)
 			{
 				if (Leds_Reds[0] == false)
 				{
+					if (Leds_Reds[1] == true && Leds_Reds[2] == true && Leds_Reds[3] == true)
+					{
+						App->audio->PlayFx(all_led_activation);
+					}
+					else
+					{
+						App->audio->PlayFx(led_activation);
+					}
 					App->player->Score += 50;
-					App->audio->PlayFx(led_activation);
 					Leds_Reds[0] = true;
 				}
 				else
@@ -501,12 +499,19 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					App->audio->PlayFx(led_reactivation);
 				}
 			}
-			if (bodyB->type == RED_LED_2 && all_reds == false)//Left
+			if (bodyB->type == RED_LED_2 && all_reds == false)
 			{
 				if (Leds_Reds[1] == false)
 				{
+					if (Leds_Reds[0] == true && Leds_Reds[2] == true && Leds_Reds[3] == true)
+					{
+						App->audio->PlayFx(all_led_activation);
+					}
+					else
+					{
+						App->audio->PlayFx(led_activation);
+					}
 					App->player->Score += 50;
-					App->audio->PlayFx(led_activation);
 					Leds_Reds[1] = true;
 				}
 				else
@@ -514,12 +519,19 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					App->audio->PlayFx(led_reactivation);
 				}
 			}
-			if (bodyB->type == RED_LED_3 && all_reds == false)//right
+			if (bodyB->type == RED_LED_3 && all_reds == false)
 			{
 				if (Leds_Reds[2] == false)
 				{
+					if (Leds_Reds[1] == true && Leds_Reds[0] == true && Leds_Reds[3] == true)
+					{
+						App->audio->PlayFx(all_led_activation);
+					}
+					else
+					{
+						App->audio->PlayFx(led_activation);
+					}
 					App->player->Score += 50;
-					App->audio->PlayFx(led_activation);
 					Leds_Reds[2] = true;
 				}
 				else
@@ -527,12 +539,19 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					App->audio->PlayFx(led_reactivation);
 				}
 			}
-			if (bodyB->type == RED_LED_4 && all_reds == false)//right
+			if (bodyB->type == RED_LED_4 && all_reds == false)
 			{
 				if (Leds_Reds[3] == false)
 				{
+					if (Leds_Reds[1] == true && Leds_Reds[0] == true && Leds_Reds[2] == true)
+					{
+						App->audio->PlayFx(all_led_activation);
+					}
+					else
+					{
+						App->audio->PlayFx(led_activation);
+					}
 					App->player->Score += 50;
-					App->audio->PlayFx(led_activation);
 					Leds_Reds[3] = true;
 				}
 				else
@@ -969,23 +988,25 @@ bool ModuleSceneIntro::CreateMap()
 	};
 
 
-	ricks.add(App->physics->CreateChain(0, 0, rick_head, 100, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_right, 34, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center, 18, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, PartUP_center_2, 18, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, PartUp_Left, 52, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Center_1, 98, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Center_2, 26, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Left, 20, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, Part_Right, 20, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, Left_Triangle, 10, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, Right_Triangle, 10, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, Part_UP_Right_Second, 26, NULL, false, FLOOR_1, BALL_1));
-	ricks.add(App->physics->CreateChain(0, 0, Ramp, 24, NULL, false, FLOOR_2, BALL_2));
-
-	CreateBall();
+	pinball.add(App->physics->CreateChain(0, 0, rick_head, 100, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, PartUP_right, 34, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, PartUP_center, 18, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, PartUP_center_2, 18, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, PartUp_Left, 52, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, Part_Center_1, 98, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, Part_Center_2, 26, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, Part_Left, 20, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, Part_Right, 20, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, Left_Triangle, 10, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, Right_Triangle, 10, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, Part_UP_Right_Second, 26, NULL, false, FLOOR_1, BALL_1));
+	pinball.add(App->physics->CreateChain(0, 0, Ramp, 24, NULL, false, FLOOR_2, BALL_2));
 	circles.add(App->physics->CreateCircle(210, 103, 8, true, BALL_2, BALL_1 | FLOOR_2));
 
+	//The first ball of the game
+	CreateBall();
+
+	
 	return true;
 }
 
@@ -1088,18 +1109,18 @@ void ModuleSceneIntro::CreateElements()
 		404, 67
 	};
 
-	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Bouncer, 16, 1.5f, false, L_TRIANGLE, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Bouncer, 16, 1.5f, false, R_TRIANGLE, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_1, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_2, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_3, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Left_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, Right_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, entrance_door, 8, NULL, false, ENTRANCE_DOOR, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, left_door, 8, NULL, false, LEFT_DOOR, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, right_door, 8, NULL, false, RIGHT_DOOR, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreatePolygon(0, 0, box_exit, 8, NULL, false, BOX_EXIT, false, FLOOR_1, BALL_1));
-	bouncers.add(App->physics->CreateCircle(SCREEN_WIDTH / 2 - 36, SCREEN_HEIGHT - 5, 7, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, Left_Bouncer, 16, 1.5f, false, L_TRIANGLE, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, Right_Bouncer, 16, 1.5f, false, R_TRIANGLE, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_1, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_2, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, Orange_Bouncer_3, 16, 1.5f, false, ORANGE, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, Left_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, Right_Up_Triangle, 8, 1.0f, false, NO_EFFECT, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, entrance_door, 8, NULL, false, ENTRANCE_DOOR, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, left_door, 8, NULL, false, LEFT_DOOR, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, right_door, 8, NULL, false, RIGHT_DOOR, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreatePolygon(0, 0, box_exit, 8, NULL, false, BOX_EXIT, false, FLOOR_1, BALL_1));
+	solids.add(App->physics->CreateCircle(SCREEN_WIDTH / 2 - 36, SCREEN_HEIGHT - 5, 7, false, FLOOR_1, BALL_1));
 
 }
 
@@ -1319,67 +1340,67 @@ void ModuleSceneIntro::DrawLeds()
 		//Leds_Blue_Button
 		if (Leds_Blue_Button == 0)
 		{
-			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
+			App->renderer->Blit(Texture, 165, 314, &blue_button_led);
 		}
 
 		if (Leds_Blue_Button == 1)
 		{
-			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
+			App->renderer->Blit(Texture, 165, 314, &blue_button_led);
 		}
 
 		if (Leds_Blue_Button == 2)
 		{
-			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
+			App->renderer->Blit(Texture, 165, 314, &blue_button_led);
 		}
 
-		//Leds_Arrow
+		//Black_Box
 		if (Leds_Turbine == 0)
 		{
-			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
+			App->renderer->Blit(Texture, 443, 196, &black_box_leds[0]);
 		}
 		if (Leds_Turbine == 1)
 		{
-			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
+			App->renderer->Blit(Texture, 452, 176, &black_box_leds[1]);
 		}
 		if (Leds_Turbine == 2)
 		{
-			App->renderer->Blit(Leds_tex, 452, 155, &black_box_leds[2]);
+			App->renderer->Blit(Texture, 452, 155, &black_box_leds[2]);
 		}
 		if (Leds_Turbine == 3)
 		{
-			App->renderer->Blit(Leds_tex, 449, 135, &black_box_leds[3]);
+			App->renderer->Blit(Texture, 449, 135, &black_box_leds[3]);
 		}
 		if (Leds_Turbine == 4)
 		{
-			App->renderer->Blit(Leds_tex, 445, 117, &black_box_leds[4]);
+			App->renderer->Blit(Texture, 445, 117, &black_box_leds[4]);
 		}
 
 		if (tree_on_raw)
 		{
-			App->renderer->Blit(Leds_tex, 295, 28, &blue_led);
-			App->renderer->Blit(Leds_tex, 325, 28, &blue_led);
-			App->renderer->Blit(Leds_tex, 356, 28, &blue_led);
+			App->renderer->Blit(Texture, 295, 28, &blue_led);
+			App->renderer->Blit(Texture, 325, 28, &blue_led);
+			App->renderer->Blit(Texture, 356, 28, &blue_led);
 		}
 
 		if (arrows_actived)
 		{
-			App->renderer->Blit(Leds_tex, 400, 158, &red_arrow);
-			App->renderer->Blit(Leds_tex, 392, 145, &red_arrow);
-			App->renderer->Blit(Leds_tex, 384, 132, &red_arrow);
-			App->renderer->Blit(Leds_tex, 377, 121, &red_arrow);
+			App->renderer->Blit(Texture, 400, 158, &red_arrow);
+			App->renderer->Blit(Texture, 392, 145, &red_arrow);
+			App->renderer->Blit(Texture, 384, 132, &red_arrow);
+			App->renderer->Blit(Texture, 377, 121, &red_arrow);
 		}
 
 		if (all_reds)
 		{
-			App->renderer->Blit(Leds_tex, 84, 425, &red_leds[0]);
-			App->renderer->Blit(Leds_tex, 131, 399, &red_leds[0]);
-			App->renderer->Blit(Leds_tex, 471, 399, &red_leds[1]);
-			App->renderer->Blit(Leds_tex, 516, 425, &red_leds[1]);
+			App->renderer->Blit(Texture, 84, 425, &red_leds[0]);
+			App->renderer->Blit(Texture, 131, 399, &red_leds[0]);
+			App->renderer->Blit(Texture, 471, 399, &red_leds[1]);
+			App->renderer->Blit(Texture, 516, 425, &red_leds[1]);
 		}
 
-		if (last_secons)
+		if (last_seconds)
 		{
-			App->renderer->Blit(Leds_tex, 292, 549, &save_ball);
+			App->renderer->Blit(Texture, 292, 549, &save_ball);
 		}
 	}
 
@@ -1388,19 +1409,19 @@ void ModuleSceneIntro::DrawLeds()
 	{
 		if (Leds_Blue_Button == 1)
 		{
-			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
+			App->renderer->Blit(Texture, 165, 314, &blue_button_led);
 		}
 
 		if (Leds_Blue_Button == 2)
 		{
-			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
-			App->renderer->Blit(Leds_tex, 156, 285, &blue_button_led);
+			App->renderer->Blit(Texture, 165, 314, &blue_button_led);
+			App->renderer->Blit(Texture, 156, 285, &blue_button_led);
 		}
 		if (Leds_Blue_Button == 3)
 		{
-			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
-			App->renderer->Blit(Leds_tex, 156, 285, &blue_button_led);
-			App->renderer->Blit(Leds_tex, 148, 259, &blue_button_led);
+			App->renderer->Blit(Texture, 165, 314, &blue_button_led);
+			App->renderer->Blit(Texture, 156, 285, &blue_button_led);
+			App->renderer->Blit(Texture, 148, 259, &blue_button_led);
 		}
 	}
 
@@ -1408,19 +1429,19 @@ void ModuleSceneIntro::DrawLeds()
 	{
 		if (Leds_Arrow[0])
 		{
-			App->renderer->Blit(Leds_tex, 400, 158, &red_arrow);
+			App->renderer->Blit(Texture, 400, 158, &red_arrow);
 		}
 		if (Leds_Arrow[1])
 		{
-			App->renderer->Blit(Leds_tex, 392, 145, &red_arrow);
+			App->renderer->Blit(Texture, 392, 145, &red_arrow);
 		}
 		if (Leds_Arrow[2])
 		{
-			App->renderer->Blit(Leds_tex, 384, 132, &red_arrow);
+			App->renderer->Blit(Texture, 384, 132, &red_arrow);
 		}
 		if (Leds_Arrow[3])
 		{
-			App->renderer->Blit(Leds_tex, 377, 121, &red_arrow);
+			App->renderer->Blit(Texture, 377, 121, &red_arrow);
 		}
 	}
 
@@ -1428,33 +1449,33 @@ void ModuleSceneIntro::DrawLeds()
 	{
 		if (Leds_Turbine == 1)
 		{
-			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
+			App->renderer->Blit(Texture, 443, 196, &black_box_leds[0]);
 		}
 		if (Leds_Turbine == 2)
 		{
-			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
-			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
+			App->renderer->Blit(Texture, 452, 176, &black_box_leds[1]);
+			App->renderer->Blit(Texture, 443, 196, &black_box_leds[0]);
 		}
 		if (Leds_Turbine == 3)
 		{
-			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
-			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
-			App->renderer->Blit(Leds_tex, 452, 155, &black_box_leds[2]);
+			App->renderer->Blit(Texture, 452, 176, &black_box_leds[1]);
+			App->renderer->Blit(Texture, 443, 196, &black_box_leds[0]);
+			App->renderer->Blit(Texture, 452, 155, &black_box_leds[2]);
 		}
 		if (Leds_Turbine == 4)
 		{
-			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
-			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
-			App->renderer->Blit(Leds_tex, 452, 155, &black_box_leds[2]);
-			App->renderer->Blit(Leds_tex, 449, 135, &black_box_leds[3]);
+			App->renderer->Blit(Texture, 452, 176, &black_box_leds[1]);
+			App->renderer->Blit(Texture, 443, 196, &black_box_leds[0]);
+			App->renderer->Blit(Texture, 452, 155, &black_box_leds[2]);
+			App->renderer->Blit(Texture, 449, 135, &black_box_leds[3]);
 		}
 		if (Leds_Turbine == 5)
 		{
-			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
-			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
-			App->renderer->Blit(Leds_tex, 452, 155, &black_box_leds[2]);
-			App->renderer->Blit(Leds_tex, 449, 135, &black_box_leds[3]);
-			App->renderer->Blit(Leds_tex, 445, 117, &black_box_leds[4]);
+			App->renderer->Blit(Texture, 452, 176, &black_box_leds[1]);
+			App->renderer->Blit(Texture, 443, 196, &black_box_leds[0]);
+			App->renderer->Blit(Texture, 452, 155, &black_box_leds[2]);
+			App->renderer->Blit(Texture, 449, 135, &black_box_leds[3]);
+			App->renderer->Blit(Texture, 445, 117, &black_box_leds[4]);
 		}
 	}
 
@@ -1462,15 +1483,15 @@ void ModuleSceneIntro::DrawLeds()
 	{
 		if (B_UP_LED[0])
 		{
-			App->renderer->Blit(Leds_tex, 295, 28, &blue_led);
+			App->renderer->Blit(Texture, 295, 28, &blue_led);
 		}
 		if (B_UP_LED[1])
 		{
-			App->renderer->Blit(Leds_tex, 325, 28, &blue_led);
+			App->renderer->Blit(Texture, 325, 28, &blue_led);
 		}
 		if (B_UP_LED[2])
 		{
-			App->renderer->Blit(Leds_tex, 356, 28, &blue_led);
+			App->renderer->Blit(Texture, 356, 28, &blue_led);
 		}
 	}
 
@@ -1478,25 +1499,25 @@ void ModuleSceneIntro::DrawLeds()
 	{
 		if (Leds_Reds[0])//Left
 		{
-			App->renderer->Blit(Leds_tex, 84, 425, &red_leds[0]);
+			App->renderer->Blit(Texture, 84, 425, &red_leds[0]);
 		}
 		if (Leds_Reds[1])//Left
 		{
-			App->renderer->Blit(Leds_tex, 131, 399, &red_leds[0]);
+			App->renderer->Blit(Texture, 131, 399, &red_leds[0]);
 		}
 		if (Leds_Reds[2])//right
 		{
-			App->renderer->Blit(Leds_tex, 471, 399, &red_leds[1]);
+			App->renderer->Blit(Texture, 471, 399, &red_leds[1]);
 		}
 		if (Leds_Reds[3])//right
 		{
-			App->renderer->Blit(Leds_tex, 516, 425, &red_leds[1]);
+			App->renderer->Blit(Texture, 516, 425, &red_leds[1]);
 		}
 	}
 
-	if (Save_Ball && last_secons == false)
+	if (Save_Ball && last_seconds == false)
 	{
-		App->renderer->Blit(Leds_tex, 292, 549, &save_ball);
+		App->renderer->Blit(Texture, 292, 549, &save_ball);
 	}
 
 }
@@ -1505,29 +1526,43 @@ void ModuleSceneIntro::DrawPanels()
 {
 	if (Number_of_Ball == 1)
 	{
-		App->renderer->Blit(Leds_tex, 275, 325, &ball_panel[0]);
+		App->renderer->Blit(Texture, 275, 325, &ball_panel[0]);
 	}
 	else if (Number_of_Ball == 2)
 	{
-		App->renderer->Blit(Leds_tex, 275, 327, &ball_panel[1]);
+		App->renderer->Blit(Texture, 275, 327, &ball_panel[1]);
 	}
 	else if (Number_of_Ball == 3)
 	{
-		App->renderer->Blit(Leds_tex, 275, 327, &ball_panel[2]);
+		App->renderer->Blit(Texture, 275, 327, &ball_panel[2]);
 	}
 	else if (Number_of_Ball == 4)
 	{
-		App->renderer->Blit(Leds_tex, 275, 327, &ball_panel[3]);
+		App->renderer->Blit(Texture, 275, 327, &ball_panel[3]);
 	}
 	else if (Number_of_Ball == 5)
 	{
-		App->renderer->Blit(Leds_tex, 275, 327, &ball_panel[4]);
+		App->renderer->Blit(Texture, 275, 327, &ball_panel[4]);
 	}
 
-	App->renderer->Blit(Leds_tex, 393, 105, &red_panel_rect);
-	App->renderer->Blit(Leds_tex, 401, 117, &red_panel_rect);
-	App->renderer->Blit(Leds_tex, 409, 129, &red_panel_rect);
-	App->renderer->Blit(Leds_tex, 418, 142, &red_panel_rect);
+	if ((Leds_Arrow[3]) == false && arrows_actived == false)
+	{
+		App->renderer->Blit(Texture, 393, 105, &red_panel_rect);
+	}
+	if ((Leds_Arrow[2]) == false && arrows_actived == false)
+	{
+		App->renderer->Blit(Texture, 401, 117, &red_panel_rect);
+	}
+	if ((Leds_Arrow[1]) == false && arrows_actived == false)
+	{
+		App->renderer->Blit(Texture, 409, 129, &red_panel_rect);
+	}
+	if ((Leds_Arrow[0]) == false && arrows_actived == false)
+	{
+		App->renderer->Blit(Texture, 418, 142, &red_panel_rect);
+	}
+	
+
 }
 
 
@@ -1535,6 +1570,7 @@ void ModuleSceneIntro::CreateBall()
 {
 	int h = rand() % 5;
 	int w = rand() % 5;
+	App->audio->PlayFx(ball_positioning);
 	circles.add(App->physics->CreateCircle(623 + w, 640 + h, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
 }
 
@@ -1552,7 +1588,7 @@ void ModuleSceneIntro::Activate_Deactivate_Doors()
 	if (deactivate_entrance == true)
 	{
 		p2List_item<PhysBody*>* c;
-		c = bouncers.getFirst();
+		c = solids.getFirst();
 		while (c != NULL)
 		{
 			if (c->data->type == ENTRANCE_DOOR)
@@ -1568,7 +1604,7 @@ void ModuleSceneIntro::Activate_Deactivate_Doors()
 	if (activate_entrance == true)
 	{
 		p2List_item<PhysBody*>* c;
-		c = bouncers.getFirst();
+		c = solids.getFirst();
 		while (c != NULL)
 		{
 			if (c->data->type == ENTRANCE_DOOR)
@@ -1585,7 +1621,7 @@ void ModuleSceneIntro::Activate_Deactivate_Doors()
 	if (deactivate_left == true)
 	{
 		p2List_item<PhysBody*>* c;
-		c = bouncers.getFirst();
+		c = solids.getFirst();
 		while (c != NULL)
 		{
 			if (c->data->type == LEFT_DOOR)
@@ -1601,7 +1637,7 @@ void ModuleSceneIntro::Activate_Deactivate_Doors()
 	if (activate_left == true)
 	{
 		p2List_item<PhysBody*>* c;
-		c = bouncers.getFirst();
+		c = solids.getFirst();
 		while (c != NULL)
 		{
 			if (c->data->type == LEFT_DOOR)
@@ -1618,7 +1654,7 @@ void ModuleSceneIntro::Activate_Deactivate_Doors()
 	if (deactivate_right == true)
 	{
 		p2List_item<PhysBody*>* c;
-		c = bouncers.getFirst();
+		c = solids.getFirst();
 		while (c != NULL)
 		{
 			if (c->data->type == RIGHT_DOOR)
@@ -1634,7 +1670,7 @@ void ModuleSceneIntro::Activate_Deactivate_Doors()
 	if (activate_right == true)
 	{
 		p2List_item<PhysBody*>* c;
-		c = bouncers.getFirst();
+		c = solids.getFirst();
 		while (c != NULL)
 		{
 			if (c->data->type == RIGHT_DOOR)
@@ -1651,7 +1687,7 @@ void ModuleSceneIntro::Activate_Deactivate_Doors()
 	if (deactivate_blackbox == true)
 	{
 		p2List_item<PhysBody*>* c;
-		c = bouncers.getFirst();
+		c = solids.getFirst();
 		while (c != NULL)
 		{
 			if (c->data->type == BOX_EXIT)
@@ -1667,7 +1703,7 @@ void ModuleSceneIntro::Activate_Deactivate_Doors()
 	if (activate_blackbox == true)
 	{
 		p2List_item<PhysBody*>* c;
-		c = bouncers.getFirst();
+		c = solids.getFirst();
 		while (c != NULL)
 		{
 			if (c->data->type == BOX_EXIT)
