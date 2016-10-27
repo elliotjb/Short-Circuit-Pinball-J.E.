@@ -152,7 +152,7 @@ bool ModuleAudio::ResumeMusic()
 		Mix_ResumeMusic();
 		if (Mix_Playing(-1) == 0)
 		{
-			LOG("Music is now playing.");//Es al reves o aixo diu al Manual pero per alguna rao aixi esta be.
+			LOG("Music is now playing.");
 			ret = false;
 		}
 		else

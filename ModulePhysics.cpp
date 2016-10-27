@@ -18,7 +18,7 @@ ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app,
 {
 	world = NULL;
 	mouse_joint = NULL;
-	debug = true;
+	debug = false;
 }
 
 // Destructor
@@ -266,7 +266,11 @@ b2RevoluteJoint* ModulePhysics::CreateJoint(b2RevoluteJoint* joint, PhysBody* bo
 update_status ModulePhysics::PostUpdate()
 {
 	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
+	{
 		debug = !debug;
+		App->scene_intro->ModeGOD = !App->scene_intro->ModeGOD;
+	}
+
 
 	if (!debug)
 		return UPDATE_CONTINUE;
