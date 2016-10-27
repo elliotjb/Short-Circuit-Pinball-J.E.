@@ -36,7 +36,7 @@ Each of them gives you a certain amount of score.
 You lose the game if you lose the initial 5 balls you have.
 After that, you can restart the game by pressing the correct control.
 
-###CORE GAME & MECHANICS
+###CORE GAME & MECHANICS
 When you start a live, the game gives you 20 seconds of "security time". It means that if you lose the ball,
 the game will give you another ball to continue the round (so you don't lose 1 live).
 
