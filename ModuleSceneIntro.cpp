@@ -1108,10 +1108,10 @@ void ModuleSceneIntro::CreateElements()
 	};
 
 	int entrance_door[8] = {
-		515, 239,
+		508, 240,
 		535, 222,
 		537, 229,
-		517, 247
+		514, 247
 	};
 
 	int left_door[8] = {
