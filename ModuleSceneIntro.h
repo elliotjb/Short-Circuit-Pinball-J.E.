@@ -70,18 +70,13 @@ public:
 	p2Point<int> ray;
 
 	bool ray_on;
-	bool tree_on_raw = false;
+
 
 	//BOOLS------------------------
 	bool Game_Over = false;
 	bool rLed_activated = false;
 	bool lLed_activated = false;
 	bool cLed_activated = false;
-
-	bool Red_Panel1 = false;
-	bool Red_Panel2 = false;
-	bool Red_Panel3 = false;
-	bool Red_Panel4 = false;
 
 	bool deactivate_entrance = false;
 	bool activate_entrance = false;
@@ -95,6 +90,8 @@ public:
 	//TIME----------------------------
 	int now = GetTickCount();
 	int now_3_row = GetTickCount();
+	int now_4_arrows = GetTickCount();
+	int now_All_Reds = GetTickCount();
 	int Lives_save_now = GetTickCount();
 	int actualtime_3_row;
 	int actualtime;
@@ -109,16 +106,21 @@ public:
 	bool Leds_intermittent = false;
 	//Led Blue Botton
 	uint Leds_Blue_Button = 0;
+	bool tree_on_raw = false;
 	//Led Arrows
 	bool Leds_Arrow[4];
+	bool Arrow_Panel[4];
+	bool arrows_actived = false;
 	//Led Turbine
 	uint Leds_Turbine = 0;
 	//Led Arrows
 	bool B_UP_LED[3];
 	//Led Arrows
 	bool Leds_Reds[4];
+	bool all_reds = false;
 	//Led Save Ball
 	bool Save_Ball = false;
+	bool last_secons = false;
 
 	//SPRITES RECTS
 	SDL_Rect blue_button_led;
@@ -127,6 +129,7 @@ public:
 	SDL_Rect red_arrow;
 	SDL_Rect red_leds[4];
 	SDL_Rect save_ball;
+	SDL_Rect Extra_ball;
 
 	//Joint in blue button-------------------
 	b2RevoluteJoint* Joint_Blue_button = NULL;
@@ -136,6 +139,7 @@ public:
 	bool CanApplyForce = false;
 	bool ifSave_force = false;
 	bool CanCreate_ball = false;
+
 	//Texture of center
 	uint Number_of_Ball = 1;
 

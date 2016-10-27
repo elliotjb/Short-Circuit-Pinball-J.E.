@@ -42,6 +42,8 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	red_leds[1] = { 55, 14, 23, 19 };
 
 	save_ball = { 110, 15, 30, 29 };
+
+	Extra_ball = { 83,14,25,22 };
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -78,6 +80,7 @@ bool ModuleSceneIntro::Start()
 	start = App->audio->LoadFx("pinball/Audio/Fx/Start.wav");
 	saved_ball = App->audio->LoadFx("pinball/Audio/Fx/SavedBall.wav");
 
+
 	//Put False all Bools
 	for (int i = 0; i < 4; i++)
 		Leds_Arrow[i] = false;
@@ -85,6 +88,8 @@ bool ModuleSceneIntro::Start()
 		B_UP_LED[i] = false;
 	for (int i = 0; i < 4; i++)
 		Leds_Reds[i] = false;
+	for (int i = 0; i < 4; i++)
+		Arrow_Panel[i] = false;
 
 	//Sensor of Start
 	Sup_Button = App->physics->CreateCircle(142, 232, 2, false, FLOOR_1, FLOOR_1);
@@ -110,7 +115,6 @@ update_status ModuleSceneIntro::Update()
 {
 	actualtime = GetTickCount();
 	actualtime_3_row = GetTickCount();
-	Live_actualtime_save = GetTickCount();
 
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) //IF GOD_MODE ACTIVATED -> TODO
 	{
@@ -128,14 +132,14 @@ update_status ModuleSceneIntro::Update()
 			b2Shape* shape = f->GetShape();
 			if (shape->TestPoint(transform, tmp->data->body->GetPosition()))
 			{
-				if (tmp->data == Ball_in_start)
+				if (tmp->data == Ball_in_start && Save_Ball == false)
 				{
 					App->audio->PlayFx(start);
 					tmp->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
 					Save_Ball = true;
 					Ball_in_start = nullptr;
 					CanApplyForce = false;
-					Lives_save_now = Live_actualtime_save;
+					Lives_save_now = actualtime;//TODO: NOMES POSAR UN ACTUALTIME
 				}
 			}
 			tmp = tmp->next;
@@ -152,10 +156,20 @@ update_status ModuleSceneIntro::Update()
 	fVector normal(0.0f, 0.0f);
 
 	//Time of save ball
-	if (Live_actualtime_save >= Lives_save_now + 20000 && Save_Ball)
+	if (Save_Ball)
 	{
-		Save_Ball = false;
+		if (actualtime >= Lives_save_now + 15000)
+		{
+			last_secons = true;
+		}
+
+		if (actualtime >= Lives_save_now + 20000 && Save_Ball)
+		{
+			Save_Ball = false;
+			last_secons = false;
+		}
 	}
+
 
 	//Check activated doors
 	Activate_Deactivate_Doors();
@@ -197,11 +211,26 @@ update_status ModuleSceneIntro::Update()
 	{
 		if (actualtime_3_row >= now_3_row + 2000)
 		{
-			now_3_row = actualtime_3_row;
 			tree_on_raw = false;
 			cLed_activated = false;
 			lLed_activated = false;
 			rLed_activated = false;
+		}
+	}
+	if (arrows_actived)
+	{
+		if (actualtime_3_row >= now_4_arrows + 2000)
+		{
+			arrows_actived = false;
+			for (int i = 0; i < 4; i++)
+				Arrow_Panel[i] = false;
+		}
+	}
+	if (all_reds)
+	{
+		if (actualtime >= now_All_Reds + 2000)
+		{
+			all_reds = false;
 		}
 	}
 
@@ -240,6 +269,7 @@ update_status ModuleSceneIntro::Update()
 		Joint_Blue_button = App->physics->CreateJoint(Joint_Blue_button, save, Sup_Button, false, 0, 0, 0, 0, false, 0, 0);
 		Blue_Button = actualtime;
 		isEnter = true;
+
 		App->player->ball_saved = false;
 		time_extra_ball = actualtime;
 		can_crate_new_ball = true;
@@ -283,7 +313,7 @@ update_status ModuleSceneIntro::Update()
 		lose_ball->body->GetWorld()->DestroyBody(lose_ball->body);
 		lose_ball = nullptr;
 
-		if (App->player->Lives > 1)
+		if (App->player->Lives >= 1)
 		{
 			if (Save_Ball)
 			{
@@ -295,18 +325,16 @@ update_status ModuleSceneIntro::Update()
 			{
 				if (circles.count() == 1)
 				{
-					CreateBall();
 					App->player->Lives--;
-					Lives_save_now = Live_actualtime_save;
+					if (App->player->Lives == 0)
+					{
+						App->player->Restart_game();
+					}
+					else
+						CreateBall();
 				}
 			}
 		}
-		else
-		{
-			App->player->Restart_game();
-
-		}
-
 		Game_Over = false;
 	}
 
@@ -444,11 +472,11 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 		if (bodyB->type == RED_LED_1 || bodyB->type == RED_LED_2 || bodyB->type == RED_LED_3 || bodyB->type == RED_LED_4)
 		{
-			if (bodyB->type == RED_LED_1)//Left
+			if (bodyB->type == RED_LED_1 && all_reds == false)//Left
 			{
-				App->player->Score += 50;
 				if (Leds_Reds[0] == false)
 				{
+					App->player->Score += 50;
 					App->audio->PlayFx(led_activation);
 					Leds_Reds[0] = true;
 				}
@@ -457,11 +485,11 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					App->audio->PlayFx(led_reactivation);
 				}
 			}
-			if (bodyB->type == RED_LED_2)//Left
+			if (bodyB->type == RED_LED_2 && all_reds == false)//Left
 			{
-				App->player->Score += 50;
 				if (Leds_Reds[1] == false)
 				{
+					App->player->Score += 50;
 					App->audio->PlayFx(led_activation);
 					Leds_Reds[1] = true;
 				}
@@ -470,11 +498,11 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					App->audio->PlayFx(led_reactivation);
 				}
 			}
-			if (bodyB->type == RED_LED_3)//right
+			if (bodyB->type == RED_LED_3 && all_reds == false)//right
 			{
-				App->player->Score += 50;
 				if (Leds_Reds[2] == false)
 				{
+					App->player->Score += 50;
 					App->audio->PlayFx(led_activation);
 					Leds_Reds[2] = true;
 				}
@@ -483,12 +511,11 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 					App->audio->PlayFx(led_reactivation);
 				}
 			}
-			if (bodyB->type == RED_LED_4)//right
+			if (bodyB->type == RED_LED_4 && all_reds == false)//right
 			{
-				App->player->Score += 50;
-				
 				if (Leds_Reds[3] == false)
 				{
+					App->player->Score += 50;
 					App->audio->PlayFx(led_activation);
 					Leds_Reds[3] = true;
 				}
@@ -501,6 +528,10 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			if (Leds_Reds[0] && Leds_Reds[1] && Leds_Reds[2] && Leds_Reds[3])
 			{
 				App->player->Score += 1250;
+				all_reds = true;
+				now_All_Reds = actualtime;
+				for (int i = 0; i < 4; i++)
+					Leds_Reds[i] = false;
 			}
 		}
 
@@ -517,34 +548,42 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		
 		}
 
-		if (bodyB->type == RED_PANEL_1 && Red_Panel1 == false)
+		if (bodyB->type == RED_PANEL_1 && Arrow_Panel[0] == false)
 		{
-			Red_Panel1 = true;
+			Arrow_Panel[0] = true;
 			App->audio->PlayFx(red_panel);
 			App->player->Score += 175;
 			Leds_Arrow[0] = true;
 		}
 
-		if (bodyB->type == RED_PANEL_2 && Red_Panel2 == false)
+		if (bodyB->type == RED_PANEL_2 && Arrow_Panel[1] == false)
 		{
-			Red_Panel2 = true;
+			Arrow_Panel[1] = true;
 			App->audio->PlayFx(red_panel);
 			App->player->Score += 175;
 			Leds_Arrow[1] = true;
 		}
-		if (bodyB->type == RED_PANEL_3 && Red_Panel3 == false)
+		if (bodyB->type == RED_PANEL_3 && Arrow_Panel[2] == false)
 		{
-			Red_Panel3 = true;
+			Arrow_Panel[2] = true;
 			App->audio->PlayFx(red_panel);
 			App->player->Score += 175;
 			Leds_Arrow[2] = true;
 		}
-		if (bodyB->type == RED_PANEL_4 && Red_Panel4 == false)
+		if (bodyB->type == RED_PANEL_4 && Arrow_Panel[3] == false)
 		{
-			Red_Panel4 = true;
+			Arrow_Panel[3] = true;
 			App->audio->PlayFx(red_panel);
 			App->player->Score += 175;
 			Leds_Arrow[3] = true;
+		}
+		if (Leds_Arrow[0] && Leds_Arrow[1] && Leds_Arrow[2] && Leds_Arrow[3])
+		{
+			now_4_arrows = actualtime;
+			arrows_actived = true;
+			App->player->Score += 500;
+			for (int i = 0; i < 4; i++)
+				Leds_Arrow[i] = false;
 		}
 
 		if (bodyB->type == BLUE_BUTTON)
@@ -1305,6 +1344,26 @@ void ModuleSceneIntro::DrawLeds()
 			App->renderer->Blit(Leds_tex, 356, 28, &blue_led);
 		}
 
+		if (arrows_actived)
+		{
+			App->renderer->Blit(Leds_tex, 400, 158, &red_arrow);
+			App->renderer->Blit(Leds_tex, 392, 145, &red_arrow);
+			App->renderer->Blit(Leds_tex, 384, 132, &red_arrow);
+			App->renderer->Blit(Leds_tex, 377, 121, &red_arrow);
+		}
+
+		if (all_reds)
+		{
+			App->renderer->Blit(Leds_tex, 84, 425, &red_leds[0]);
+			App->renderer->Blit(Leds_tex, 131, 399, &red_leds[0]);
+			App->renderer->Blit(Leds_tex, 471, 399, &red_leds[1]);
+			App->renderer->Blit(Leds_tex, 516, 425, &red_leds[1]);
+		}
+
+		if (last_secons)
+		{
+			App->renderer->Blit(Leds_tex, 292, 549, &save_ball);
+		}
 	}
 
 	//LEDS_Permanents
@@ -1418,7 +1477,7 @@ void ModuleSceneIntro::DrawLeds()
 		}
 	}
 
-	if (Save_Ball)
+	if (Save_Ball && last_secons == false)
 	{
 		App->renderer->Blit(Leds_tex, 292, 549, &save_ball);
 	}

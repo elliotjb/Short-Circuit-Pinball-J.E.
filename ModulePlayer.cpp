@@ -201,14 +201,13 @@ void ModulePlayer::Restart_game()
 	App->scene_intro->Leds_Blue_Button = 0;
 
 	App->scene_intro->Game_Over = false;
+
 	App->scene_intro->rLed_activated = false;
 	App->scene_intro->lLed_activated = false;
 	App->scene_intro->cLed_activated = false;
 
-	App->scene_intro->Red_Panel1 = false;
-	App->scene_intro->Red_Panel2 = false;
-	App->scene_intro->Red_Panel3 = false;
-	App->scene_intro->Red_Panel4 = false;
+	for (int i = 0; i < 4; i++)
+		App->scene_intro->Arrow_Panel[i] = false;
 
 	App->scene_intro->deactivate_entrance = false;
 	App->scene_intro->activate_entrance = false;
