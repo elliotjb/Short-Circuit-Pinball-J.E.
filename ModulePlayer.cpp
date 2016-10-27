@@ -14,7 +14,7 @@
 ModulePlayer::ModulePlayer(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	lever_left_Tex = lever_right_Tex = NULL;
-	Lives = 3;
+	Lives = 5;
 	Extra_Balls = 0;
 	Score = 0;
 }
@@ -185,9 +185,39 @@ void ModulePlayer::Restart_game()
 {
 	if (App->scene_intro->Game_Over == true)
 	{
-		Lives = 3;
+		Lives = 5;
 		Last_score = Score;
 		Score = 0;
 		App->scene_intro->circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, FLOOR_1 | BALL_1 | BALL_2));
 	}
+	App->scene_intro->Number_of_Ball = 1;
+	for (int i = 0; i < 4; i++)
+		App->scene_intro->Leds_Arrow[i] = false;
+	for (int i = 0; i < 3; i++)
+		App->scene_intro->B_UP_LED[i] = false;
+	for (int i = 0; i < 4; i++)
+		App->scene_intro->Leds_Reds[i] = false;
+	App->scene_intro->Leds_Turbine = 0;
+	App->scene_intro->Leds_Blue_Button = 0;
+
+	App->scene_intro->Game_Over = false;
+	App->scene_intro->rLed_activated = false;
+	App->scene_intro->lLed_activated = false;
+	App->scene_intro->cLed_activated = false;
+
+	App->scene_intro->Red_Panel1 = false;
+	App->scene_intro->Red_Panel2 = false;
+	App->scene_intro->Red_Panel3 = false;
+	App->scene_intro->Red_Panel4 = false;
+
+	App->scene_intro->deactivate_entrance = false;
+	App->scene_intro->activate_entrance = false;
+	App->scene_intro->activate_left = false;
+	App->scene_intro->deactivate_left = false;
+	App->scene_intro->activate_right = false;
+	App->scene_intro->deactivate_right = false;
+	App->scene_intro->activate_blackbox = false;
+	App->scene_intro->deactivate_blackbox = false;
+	App->scene_intro->tree_on_raw = false;
+
 }

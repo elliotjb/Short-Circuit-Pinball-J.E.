@@ -3,6 +3,7 @@
 #include "p2List.h"
 #include "p2Point.h"
 #include "Globals.h"
+#include "time.h"
 #include "Box2D/Box2D/Box2D.h"
 
 class PhysBody;
@@ -21,6 +22,7 @@ public:
 	void CreateElements();
 	void CreateSensors();
 	void DrawLeds();
+	void CreateBall();
 
 	void Activate_Deactivate_Doors();
 
@@ -98,6 +100,9 @@ public:
 	int actualtime;
 	int Live_actualtime_save;
 	int Blue_Button = GetTickCount();
+	int time_extra_ball = GetTickCount();
+	int time_new_ball = GetTickCount();
+	bool can_crate_new_ball = false;
 
 	//TEXTURES LEDS--------------------
 	SDL_Texture* Leds_tex;
@@ -121,8 +126,10 @@ public:
 
 	//Apply Froce---------------------------
 	bool CanApplyForce = false;
-
-
+	bool ifSave_force = false;
+	bool CanCreate_ball = false;
+	//Texture of center
+	uint Number_of_Ball = 1;
 
 };
 

@@ -14,7 +14,7 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	Leds_tex = NULL;
 	ray_on = false;
 	sensed = false;
-
+	srand(time(NULL));
 	//initialize Ball dimension sprites
 	ball_rect[0] = { 0, 0, 26, 26 };
 	ball_rect[1] = { 26, 0, 26, 26 };
@@ -66,7 +66,7 @@ bool ModuleSceneIntro::Start()
 		Leds_Reds[i] = false;
 
 	//Sensor of Start
-	Sup_Button = App->physics->CreateCircle(137, 222, 2, false, FLOOR_1, FLOOR_1);
+	Sup_Button = App->physics->CreateCircle(142, 232, 2, false, FLOOR_1, FLOOR_1);
 	Lose_sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT + 10, SCREEN_WIDTH / 2, 10, GAME_OVER);
 
 	CreateMap();
@@ -91,10 +91,10 @@ update_status ModuleSceneIntro::Update()
 	actualtime_3_row = GetTickCount();
 	Live_actualtime_save = GetTickCount();
 
-	/*if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) //IF GOD_MODE ACTIVATED -> TODO
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN) //IF GOD_MODE ACTIVATED -> TODO
 	{
 		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 7, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
-	}*/
+	}
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP)
 	{
@@ -216,21 +216,28 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->player->ball_saved)
 	{
-		Joint_Blue_button = App->physics->CreateJoint(Joint_Blue_button, save, Sup_Button, false, 10, 10, 0, 0, false, 0, 0);
+		Joint_Blue_button = App->physics->CreateJoint(Joint_Blue_button, save, Sup_Button, false, 0, 0, 0, 0, false, 0, 0);
 		Blue_Button = actualtime;
-		//save->body->GetWorld()->DestroyBody(save->body);
-		circles.add(App->physics->CreateCircle(619, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
 		isEnter = true;
 		App->player->ball_saved = false;
+		time_extra_ball = actualtime;
+		can_crate_new_ball = true;
 	}
 
 	if (isEnter)
 	{
-		if (actualtime >= Blue_Button + 40000)//40s stay in Button
+		if (actualtime >= time_extra_ball + 800 && can_crate_new_ball == true)
+		{
+			CreateBall();
+			circles.getLast()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+			can_crate_new_ball = false;
+		}
+
+		if (actualtime >= Blue_Button + 40000 || circles.count() == 2 && actualtime >= Blue_Button + 2000)//40s stay in Button
 		{
 			App->audio->PlayFx(blue_button);
 			App->physics->Destroy_Joint_button();
-			save->body->ApplyForceToCenter(b2Vec2(10.0f, 50.0f), true);
+			save->body->ApplyForceToCenter(b2Vec2(10.0f, 20.0f), true); //-> TODO
 			isEnter = false;
 			save = nullptr;
 		}
@@ -260,15 +267,14 @@ update_status ModuleSceneIntro::Update()
 			if (Save_Ball)
 			{
 				App->audio->PlayFx(saved_ball);
-				circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
-				App->audio->PlayFx(start);
-				circles.getLast()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+				ifSave_force = true;
+				CanCreate_ball = true;
 			}
 			else
 			{
 				if (circles.count() == 1)
 				{
-					circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
+					CreateBall();
 					App->player->Lives--;
 					Lives_save_now = Live_actualtime_save;
 				}
@@ -282,6 +288,22 @@ update_status ModuleSceneIntro::Update()
 
 		Game_Over = false;
 	}
+
+	if (ifSave_force)
+	{
+		if (actualtime >= time_new_ball + 1000 && CanCreate_ball)
+		{
+			CreateBall();
+			CanCreate_ball = false;
+		}
+		if (actualtime >= time_new_ball + 1250)
+		{
+			App->audio->PlayFx(start);
+			circles.getLast()->data->body->ApplyForceToCenter(b2Vec2(0.0f, -120.0f), true);
+			ifSave_force = false;
+		}
+	}
+
 
 
 	return UPDATE_CONTINUE;
@@ -300,6 +322,10 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			App->physics->IsDestroyed = true;
 			lose_ball = bodyA;
 			Game_Over = true;
+			if (Save_Ball)
+			{
+				time_new_ball = actualtime;
+			}
 		}
 
 		if (bodyB->type == ORANGE)
@@ -606,12 +632,12 @@ bool ModuleSceneIntro::CreateMap()
 		156, 344,
 		159, 337,
 		132, 253,
-		128, 245,
-		124, 239,
-		125, 226,
-		132, 217,
-		144, 213,
-		155, 214,
+		127, 238,
+		129, 229,
+		136, 223,
+		145, 221,
+		155, 223,
+		160, 229,
 		165, 240,
 		168, 238,
 		144, 171,
@@ -1074,10 +1100,10 @@ void ModuleSceneIntro::CreateSensors()
 	};
 
 	int Blue_Button[8] = {
-		125, 230,
-		129, 238,
-		158, 229,
-		155, 220
+		130, 230,
+		140, 233,
+		144, 232,
+		147, 222
 	};
 
 	int Red_Led_1[8] = {
@@ -1408,6 +1434,13 @@ void ModuleSceneIntro::DrawLeds()
 		App->renderer->Blit(Leds_tex, 292, 549, &tmp);
 	}
 	
+}
+
+void ModuleSceneIntro::CreateBall()
+{
+	int h = rand() % 5;
+	int w = rand() % 5;
+	circles.add(App->physics->CreateCircle(623 + w, 640 + h, 8, true, BALL_1, BALL_1 | BALL_2 | FLOOR_1));
 }
 
 //Unidirectional doors mechanism
