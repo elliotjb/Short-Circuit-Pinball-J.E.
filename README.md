@@ -25,7 +25,7 @@ Welcome to our tribute of "Short Circuit Pinball" made with Box2D.
       You can click the ball and hold the mouse button to move it arround the map.
 - SPACEBAR: restart the game after the Game Over.
 
-##CORE GAME & MECHANICS
+##CORE GAME AND MECHANICS
 
 ###OBJECTIVE
 You have to reach the maximum score by hitting and interacting with all the elements 
@@ -44,7 +44,7 @@ the game will give you another ball to continue the round (so you don't lose 1 l
 - You can collide with the ball that's inside the ramp to reach the top diana.
 - The red turbine gives you points every time you cross it.
 - You can make the ball pass through the black box to get some extra score.
-- If the ball enters into the blue button, a 40 seconds timer will start. The game will launcha new ball 
+- If the ball enters into the blue button, a 40 seconds timer will start. The game will launch a new ball 
   to interact with during this period. If you don't lose the ball during these seconds, you will be 
   rewarded with an extra ball (adding more fun to the gameplay!).
   If you lose the ball during this period of time, the button will eject the ball and you won't get the extra ball.
@@ -54,7 +54,9 @@ the game will give you another ball to continue the round (so you don't lose 1 l
 
 
 Authors: Elliot Jimenez & Jordi Oña.
+
 Original Game Link: http://www.minijuegos.com/juego/short-circuit-pinball
+
 Repository Link: https://github.com/elliotjb/Short-Circuit-Pinball-J.E..git
 
 
