@@ -53,6 +53,7 @@ public:
 
 	bool active_left = false;
 	bool active_right = false;
+	bool Restart = false;
 
 	//
 	char title[100];
@@ -64,4 +65,7 @@ public:
 	b2RevoluteJoint* Joint_force_right = NULL;
 	b2RevoluteJoint* Joint_lever_UP = NULL;
 	b2RevoluteJoint* Joint_force_UP = NULL;
+
+	//Multiplier
+	uint Multiplier = 1;
 };

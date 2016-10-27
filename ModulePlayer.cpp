@@ -112,13 +112,19 @@ update_status ModulePlayer::Update()
 
 	if (App->scene_intro->isEnter)
 	{
-		sprintf_s(title, "Score: %06d - Lives: %02d - Last Score: %06d   EXTRA BALL IN: %i s", Score, Lives, Last_score,40 - (App->scene_intro->actualtime - App->scene_intro->Blue_Button)/1000);
+		sprintf_s(title, "Lives: %02d - Score: %06d - Last Score: %06d - Multiplier: %02d   EXTRA BALL IN: %i s", Lives, Score, Last_score, Multiplier, 40 - (App->scene_intro->actualtime - App->scene_intro->Blue_Button) / 1000);
 	}
 	else
 	{
-		sprintf_s(title, "Score: %06d - Lives: %02d - Last Score: %06d", Score, Lives, Last_score);
+		sprintf_s(title, "Lives: %02d - Score: %06d - Last Score: %06d - Multiplier: %02d", Lives, Score, Last_score, Multiplier);
 	}
 	App->window->SetTitle(title);
+
+	if (Restart)
+	{
+		App->audio->StopMusic();
+		Restart = false;
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -129,17 +135,14 @@ bool ModulePlayer::CreateLevers()
 
 	//Lever Left
 	pivot_left = App->physics->CreateCircle(205, 575, 10, false,FLOOR_1, FLOOR_1);
-	//lever_left = App->physics->CreateRectangle(210, 586, 70, 10, true);
 	pivot_force_left = App->physics->CreateCircle(280, 575, 5, true, FLOOR_1, FLOOR_1);
 
 	//Lever Right
 	pivot_Right = App->physics->CreateCircle(410, 575, 10, false, FLOOR_1, FLOOR_1);
-	//lever_Right = App->physics->CreateRectangle(410, 586, 70, 10, true);
 	pivot_force_Right = App->physics->CreateCircle(340, 575, 5, true, FLOOR_1, FLOOR_1);
 
 	//Lever UP Right
 	pivot_UP_left = App->physics->CreateCircle(187, 144, 5, false, FLOOR_1, FLOOR_1);
-	//lever_Right = App->physics->CreateRectangle(410, 586, 70, 10, true);
 	pivot_UP_force_left = App->physics->CreateCircle(187, 155, 2, true, FLOOR_1, FLOOR_1);
 
 	int Chain_lever_left[16] = {
@@ -186,13 +189,12 @@ bool ModulePlayer::CreateLevers()
 
 void ModulePlayer::Restart_game()
 {
-	if (App->scene_intro->Check_Game_Over == true)
-	{
-		Lives = 5;
-		Last_score = Score;
-		Score = 0;
-		App->scene_intro->circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, FLOOR_1 | BALL_1 | BALL_2));
-	}
+
+	Lives = 5;
+	Last_score = Score;
+	Score = 0;
+	Multiplier = 1;
+	App->scene_intro->circles.add(App->physics->CreateCircle(620, 600, 8, true, BALL_1, FLOOR_1 | BALL_1 | BALL_2));
 	App->scene_intro->Number_of_Ball = 1;
 	for (int i = 0; i < 4; i++)
 		App->scene_intro->Leds_Arrow[i] = false;
@@ -222,4 +224,7 @@ void ModulePlayer::Restart_game()
 	App->scene_intro->deactivate_blackbox = false;
 	App->scene_intro->tree_on_raw = false;
 
+	App->audio->ResumeMusic();
+
+	LOG("GAME RESTARTED");
 }
