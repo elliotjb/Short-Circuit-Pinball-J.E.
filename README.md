@@ -53,7 +53,10 @@ the game will give you another ball to continue the round (so you don't lose 1 l
 ##THAT'S ALL FOLKS! HOPE YOU ENJOY IT!
 
 
-Authors: Elliot Jimenez & Jordi Oña.
+Authors: 
+
+- Elliot Jimenez: https://github.com/elliotjb
+- Jordi Oña: https://github.com/Jordior97
 
 Original Game Link: http://www.minijuegos.com/juego/short-circuit-pinball
 
