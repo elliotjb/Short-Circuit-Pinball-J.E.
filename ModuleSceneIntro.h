@@ -120,6 +120,14 @@ public:
 	//Led Save Ball
 	bool Save_Ball = false;
 
+	//SPRITES RECTS
+	SDL_Rect blue_button_led;
+	SDL_Rect black_box_leds[5];
+	SDL_Rect blue_led;
+	SDL_Rect red_arrow;
+	SDL_Rect red_leds[4];
+	SDL_Rect save_ball;
+
 	//Joint in blue button-------------------
 	b2RevoluteJoint* Joint_Blue_button = NULL;
 	bool isEnter = false;

@@ -15,6 +15,7 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	ray_on = false;
 	sensed = false;
 	srand(time(NULL));
+
 	//initialize Ball dimension sprites
 	ball_rect[0] = { 0, 0, 26, 26 };
 	ball_rect[1] = { 26, 0, 26, 26 };
@@ -23,6 +24,24 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	ball_rect[4] = { 108, 0, 26, 26 };
 	ball_rect[5] = { 136, 0, 26, 26 };
 	ball_rect[6] = { 163, 0, 26, 26 };
+
+	//initialize leds
+	blue_button_led = { 1, 13, 20, 16 };
+
+	black_box_leds[0] = { 121, 1, 20, 12 };
+	black_box_leds[1] = { 99, 1, 20, 11 };
+	black_box_leds[2] = { 77, 1, 19, 11 };
+	black_box_leds[3] = { 57, 1, 18, 10 };
+	black_box_leds[4] = { 36, 1, 19, 8 };
+
+	blue_led = { 3, 1, 13, 7 };
+
+	red_arrow = { 16, 0, 19, 10 };
+
+	red_leds[0] = { 29, 14, 23, 19 };
+	red_leds[1] = { 55, 14, 23, 19 };
+
+	save_ball = { 110, 15, 30, 29 };
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -35,6 +54,8 @@ bool ModuleSceneIntro::Start()
 	bool ret = true;
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
+
+	App->audio->PlayMusic("pinball/Audio/Music/Music.ogg", 0.0f);
 
 	circle = App->textures->Load("pinball/Ball.png");
 	box = App->textures->Load("pinball/crate.png");
@@ -1242,55 +1263,46 @@ void ModuleSceneIntro::DrawLeds()
 		//Leds_Blue_Button
 		if (Leds_Blue_Button == 0)
 		{
-			SDL_Rect tmp = { 1, 13, 20, 16 };
-			App->renderer->Blit(Leds_tex, 165, 314, &tmp);
+			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
 		}
 
 		if (Leds_Blue_Button == 1)
 		{
-			SDL_Rect tmp = { 1, 13, 20, 16 };
-			App->renderer->Blit(Leds_tex, 156, 285, &tmp);
+			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
 		}
 
 		if (Leds_Blue_Button == 2)
 		{
-			SDL_Rect tmp = { 1, 13, 20, 16 };
-			App->renderer->Blit(Leds_tex, 148, 259, &tmp);
+			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
 		}
 
 		//Leds_Arrow
 		if (Leds_Turbine == 0)
 		{
-			SDL_Rect tmp = { 121, 1, 20, 12 };
-			App->renderer->Blit(Leds_tex, 443, 196, &tmp);
+			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
 		}
 		if (Leds_Turbine == 1)
 		{
-			SDL_Rect tmp = { 99, 1, 20, 11 };
-			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
+			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
 		}
 		if (Leds_Turbine == 2)
 		{
-			SDL_Rect tmp = { 77, 1, 19, 11 };
-			App->renderer->Blit(Leds_tex, 452, 155, &tmp);
+			App->renderer->Blit(Leds_tex, 452, 155, &black_box_leds[2]);
 		}
 		if (Leds_Turbine == 3)
 		{
-			SDL_Rect tmp = { 57, 1, 18, 10 };
-			App->renderer->Blit(Leds_tex, 449, 135, &tmp);
+			App->renderer->Blit(Leds_tex, 449, 135, &black_box_leds[3]);
 		}
 		if (Leds_Turbine == 4)
 		{
-			SDL_Rect tmp = { 36, 1, 19, 8 };
-			App->renderer->Blit(Leds_tex, 446, 117, &tmp);
+			App->renderer->Blit(Leds_tex, 445, 117, &black_box_leds[4]);
 		}
 
 		if (tree_on_raw)
 		{
-			SDL_Rect tmp = { 3, 1, 13, 7 };
-			App->renderer->Blit(Leds_tex, 295, 28, &tmp);
-			App->renderer->Blit(Leds_tex, 325, 28, &tmp);
-			App->renderer->Blit(Leds_tex, 356, 28, &tmp);
+			App->renderer->Blit(Leds_tex, 295, 28, &blue_led);
+			App->renderer->Blit(Leds_tex, 325, 28, &blue_led);
+			App->renderer->Blit(Leds_tex, 356, 28, &blue_led);
 		}
 
 	}
@@ -1298,43 +1310,41 @@ void ModuleSceneIntro::DrawLeds()
 	//LEDS_Permanents
 	if (Leds_Blue_Button > 0)
 	{
-		SDL_Rect tmp = { 1, 13, 20, 16 };
 		if (Leds_Blue_Button == 1)
 		{
-			App->renderer->Blit(Leds_tex, 165, 314, &tmp);
+			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
 		}
 
 		if (Leds_Blue_Button == 2)
 		{
-			App->renderer->Blit(Leds_tex, 165, 314, &tmp);
-			App->renderer->Blit(Leds_tex, 156, 285, &tmp);
+			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
+			App->renderer->Blit(Leds_tex, 156, 285, &blue_button_led);
 		}
 		if (Leds_Blue_Button == 3)
 		{
-			App->renderer->Blit(Leds_tex, 165, 314, &tmp);
-			App->renderer->Blit(Leds_tex, 156, 285, &tmp);
-			App->renderer->Blit(Leds_tex, 148, 259, &tmp);
+			App->renderer->Blit(Leds_tex, 165, 314, &blue_button_led);
+			App->renderer->Blit(Leds_tex, 156, 285, &blue_button_led);
+			App->renderer->Blit(Leds_tex, 148, 259, &blue_button_led);
 		}
 	}
 
 	if (Leds_Arrow[0] || Leds_Arrow[1] || Leds_Arrow[2] || Leds_Arrow[3])
 	{
-		SDL_Rect tmp = { 16, 0, 19, 10 };
 		if (Leds_Arrow[0])
 		{
-			App->renderer->Blit(Leds_tex, 400, 158, &tmp);
+			App->renderer->Blit(Leds_tex, 400, 158, &red_arrow);
 		}
 		if (Leds_Arrow[1])
 		{
-			App->renderer->Blit(Leds_tex, 392, 145, &tmp);
+			App->renderer->Blit(Leds_tex, 392, 145, &red_arrow);
 		}
 		if (Leds_Arrow[2])
 		{
-			App->renderer->Blit(Leds_tex, 384, 132, &tmp);
+			App->renderer->Blit(Leds_tex, 384, 132, &red_arrow);
 		}
 		if (Leds_Arrow[3])
 		{
-			App->renderer->Blit(Leds_tex, 377, 121, &tmp);
+			App->renderer->Blit(Leds_tex, 377, 121, &red_arrow);
 		}
 	}
 
@@ -1342,65 +1352,49 @@ void ModuleSceneIntro::DrawLeds()
 	{
 		if (Leds_Turbine == 1)
 		{
-			SDL_Rect tmp = { 121, 1, 20, 12 };
-			App->renderer->Blit(Leds_tex, 443, 196, &tmp);
+			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
 		}
 		if (Leds_Turbine == 2)
 		{
-			SDL_Rect tmp = { 99, 1, 20, 11 };
-			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
-			SDL_Rect tmp_2 = { 121, 1, 20, 12 };
-			App->renderer->Blit(Leds_tex, 443, 196, &tmp_2);
+			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
+			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
 		}
 		if (Leds_Turbine == 3)
 		{
-			SDL_Rect tmp = { 99, 1, 20, 11 };
-			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
-			SDL_Rect tmp_2 = { 121, 1, 20, 12 };
-			App->renderer->Blit(Leds_tex, 443, 196, &tmp_2);
-			SDL_Rect tmp_3 = { 77, 1, 19, 11 };
-			App->renderer->Blit(Leds_tex, 452, 155, &tmp_3);
+			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
+			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
+			App->renderer->Blit(Leds_tex, 452, 155, &black_box_leds[2]);
 		}
 		if (Leds_Turbine == 4)
 		{
-			SDL_Rect tmp = { 99, 1, 20, 11 };
-			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
-			SDL_Rect tmp_2 = { 121, 1, 20, 12 };
-			App->renderer->Blit(Leds_tex, 443, 196, &tmp_2);
-			SDL_Rect tmp_3 = { 77, 1, 19, 11 };
-			App->renderer->Blit(Leds_tex, 452, 155, &tmp_3);
-			SDL_Rect tmp_4 = { 57, 1, 18, 10 };
-			App->renderer->Blit(Leds_tex, 449, 135, &tmp_4);
+			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
+			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
+			App->renderer->Blit(Leds_tex, 452, 155, &black_box_leds[2]);
+			App->renderer->Blit(Leds_tex, 449, 135, &black_box_leds[3]);
 		}
 		if (Leds_Turbine == 5)
 		{
-			SDL_Rect tmp = { 99, 1, 20, 11 };
-			App->renderer->Blit(Leds_tex, 452, 176, &tmp);
-			SDL_Rect tmp_2 = { 121, 1, 20, 12 };
-			App->renderer->Blit(Leds_tex, 443, 196, &tmp_2);
-			SDL_Rect tmp_3 = { 77, 1, 19, 11 };
-			App->renderer->Blit(Leds_tex, 452, 155, &tmp_3);
-			SDL_Rect tmp_4 = { 57, 1, 18, 10 };
-			App->renderer->Blit(Leds_tex, 449, 135, &tmp_4);
-			SDL_Rect tmp_5 = { 36, 1, 19, 8 };
-			App->renderer->Blit(Leds_tex, 446, 117, &tmp_5);
+			App->renderer->Blit(Leds_tex, 452, 176, &black_box_leds[1]);
+			App->renderer->Blit(Leds_tex, 443, 196, &black_box_leds[0]);
+			App->renderer->Blit(Leds_tex, 452, 155, &black_box_leds[2]);
+			App->renderer->Blit(Leds_tex, 449, 135, &black_box_leds[3]);
+			App->renderer->Blit(Leds_tex, 445, 117, &black_box_leds[4]);
 		}
 	}
 
 	if (B_UP_LED[0] || B_UP_LED[1] || B_UP_LED[2])
 	{
-		SDL_Rect tmp = { 3, 1, 13, 7 };
 		if (B_UP_LED[0])
 		{
-			App->renderer->Blit(Leds_tex, 295, 28, &tmp);
+			App->renderer->Blit(Leds_tex, 295, 28, &blue_led);
 		}
 		if (B_UP_LED[1])
 		{
-			App->renderer->Blit(Leds_tex, 325, 28, &tmp);
+			App->renderer->Blit(Leds_tex, 325, 28, &blue_led);
 		}
 		if (B_UP_LED[2])
 		{
-			App->renderer->Blit(Leds_tex, 356, 28, &tmp);
+			App->renderer->Blit(Leds_tex, 356, 28, &blue_led);
 		}
 	}
 
@@ -1408,33 +1402,33 @@ void ModuleSceneIntro::DrawLeds()
 	{
 		if (Leds_Reds[0])//Left
 		{
-			SDL_Rect tmp = { 29, 14, 23, 19 };
-			App->renderer->Blit(Leds_tex, 84, 425, &tmp);
+			App->renderer->Blit(Leds_tex, 84, 425, &red_leds[0]);
 		}
 		if (Leds_Reds[1])//Left
 		{
-			SDL_Rect tmp = { 29, 14, 23, 19 };
-			App->renderer->Blit(Leds_tex, 131, 399, &tmp);
+			App->renderer->Blit(Leds_tex, 131, 399, &red_leds[0]);
 		}
 		if (Leds_Reds[2])//right
 		{
-			SDL_Rect tmp = { 55, 14, 23, 19 };
-			App->renderer->Blit(Leds_tex, 471, 399, &tmp);
+			App->renderer->Blit(Leds_tex, 471, 399, &red_leds[1]);
 		}
 		if (Leds_Reds[3])//right
 		{
-			SDL_Rect tmp = { 55, 14, 23, 19 };
-			App->renderer->Blit(Leds_tex, 516, 425, &tmp);
+			App->renderer->Blit(Leds_tex, 516, 425, &red_leds[1]);
 		}
 	}
 
 	if (Save_Ball)
 	{
-		SDL_Rect tmp = { 110, 15, 30, 29 };
-		App->renderer->Blit(Leds_tex, 292, 549, &tmp);
+		App->renderer->Blit(Leds_tex, 292, 549, &save_ball);
 	}
-	
+
 }
+
+/*void ModuleSceneIntro::DrawPanels()
+{
+}*/
+
 
 void ModuleSceneIntro::CreateBall()
 {
