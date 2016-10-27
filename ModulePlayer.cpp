@@ -28,10 +28,10 @@ bool ModulePlayer::Start()
 {
 	LOG("Loading player");
 	CreateLevers();
-	lever_left_Tex = App->textures->Load("pinball/LeftLever.png");
-	lever_right_Tex = App->textures->Load("pinball/RightLever.png");
+	lever_left_Tex = App->textures->Load("pinball/Textures/LeftLever.png");
+	lever_right_Tex = App->textures->Load("pinball/Textures/RightLever.png");
 	lever_fx = App->audio->LoadFx("pinball/Audio/Fx/Flipers.wav");
-	lever_UP_Tex = App->textures->Load("pinball/UpLever.png");
+	lever_UP_Tex = App->textures->Load("pinball/Textures/UpLever.png");
 
 	//Create Joints
 	Joint_lever_left = App->physics->CreateJoint(Joint_lever_left, lever_left, pivot_left, false, 205, 575, 0, 0, true, 0, 40);

@@ -72,12 +72,12 @@ bool ModuleSceneIntro::Start()
 
 	App->audio->PlayMusic("pinball/Audio/Music/Music.ogg", 0.0f);
 
-	circle = App->textures->Load("pinball/Ball.png");
-	PinballMap = App->textures->Load("pinball/Map_Pinball.png");
-	PinballMap_2nd_Layer = App->textures->Load("pinball/Map_Pinball_2nd_Layer.png");
+	circle = App->textures->Load("pinball/Textures/Ball.png");
+	PinballMap = App->textures->Load("pinball/Textures/Map_Pinball.png");
+	PinballMap_2nd_Layer = App->textures->Load("pinball/Textures/Map_Pinball_2nd_Layer.png");
 	
 	//Load Leds Textures
-	Texture = App->textures->Load("pinball/SpriteSheet.png");
+	Texture = App->textures->Load("pinball/Textures/SpriteSheet.png");
 
 	//Loading Sound Fx
 	left_triangle = App->audio->LoadFx("pinball/Audio/Fx/LeftTriangle.wav");
