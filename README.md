@@ -9,20 +9,20 @@ https://youtu.be/O2oB_6BPtqo
 
 ### Short Circuit v.1.0
 
-###We have not included the next original features:
+### We have not included the next original features:
 - 3D animations.
 - Magnetism mechanic of the top circle.
 - Pinball "mini-shake".
 - Led movement control.
 - Black box sound, blue lights, ball lost sound.
 
-###We have adapted some mechanics of the game to make it playable (it has some bugs that made the game loop infinite)
+### We have adapted some mechanics of the game to make it playable (it has some bugs that made the game loop infinite)
 - Blue button mechanism (gives you an extra ball if you enter a ball into it).
 - Black box mechanism (it gives extra score when you cross it.
 - Score bonifications and multipliers.
 
 
-##CONTROLS
+## CONTROLS
 - INTRO: launch the ball
 - LEFT / "A": move left and up levers.
 - RIGHT / "D": move right lever.
@@ -30,18 +30,18 @@ https://youtu.be/O2oB_6BPtqo
       You can click the ball and hold the mouse button to move it arround the map.
 - SPACEBAR: restart the game after the Game Over.
 
-##CORE GAME AND MECHANICS
+## CORE GAME AND MECHANICS
 
-###OBJECTIVE
+### OBJECTIVE
 You have to reach the maximum score by hitting and interacting with all the elements 
 that are distributed around the pinball (leds, buttons, panels...).
 Each of them gives you a certain amount of score.
 
-###LOSE CONDITION
+### LOSE CONDITION
 You lose the game if you lose the initial 5 balls you have.
 After that, you can restart the game by pressing the correct control.
 
-###CORE GAME & MECHANICS
+### CORE GAME & MECHANICS
 When you start a live, the game gives you 20 seconds of "security time". It means that if you lose the ball,
 the game will give you another ball to continue the round (so you don't lose 1 live).
 
@@ -55,7 +55,7 @@ the game will give you another ball to continue the round (so you don't lose 1 l
   If you lose the ball during this period of time, the button will eject the ball and you won't get the extra ball.
 
 
-##THAT'S ALL FOLKS! HOPE YOU ENJOY IT!
+## THAT'S ALL FOLKS! HOPE YOU ENJOY IT!
 
 
 Authors: 
