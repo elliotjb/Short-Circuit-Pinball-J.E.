@@ -2,6 +2,10 @@
 
 Welcome to our tribute of "Short Circuit Pinball" made with Box2D.
 
+![](https://github.com/elliotjb/Short-Circuit-Pinball-J.E./blob/master/Game/Captura.PNG)
+
+![Look Gameplay](https://youtu.be/O2oB_6BPtqo)
+
 ### Short Circuit v.1.0
 
 ###We have not included the next original features:
